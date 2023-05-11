@@ -1,0 +1,32 @@
+{
+    "config": {
+        "error": {
+            "auth": "Impossible de recupérer le token. Vérifiez vos identifiants",
+            "noinsee": "Impossible de recupérer le code INSEE. Vérifiez le code postal et les logs.."
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "username": "Nom d'utilisateur",
+                    "password": "Mot de passe"
+                },
+                "description": "Entrez vos identifiants Atmo Data",
+                "title": "Authentification"
+            },
+            "location": {
+                "data": {
+                    "code_postal": "Code Postal"
+                },
+                "description": "Saisissez votre code postal",
+                "title": "Localisation"
+            },
+            "multilocation": {
+                "data": {
+                    "city": "Ville"
+                },
+                "title": "Plusieurs codes INSEE trouvés pour ce code postal",
+                "description": "Sélectionnez la commune"
+            }
+        }
+    }
+}
