@@ -10,8 +10,8 @@ Les données exposés sont :
 - Niveau de pollution Dioxide d'Azote (NO<sub>2</sub>)
 - Niveau de pollution Ozone (O<sub>3</sub>)
 - Niveau de pollution Dioxide de Souffre (SO<sub>2</sub>)
-- Niveau de pollution Particules fines <2.5 $\mu$m (Pm25)
-- Niveau de pollution Particules fines <10 $\mu$m (Pm10)
+- Niveau de pollution Particules fines <2.5 µm (Pm25)
+- Niveau de pollution Particules fines <10 µm (Pm10)
 - Niveau global de qualité de l'air.
 
 ## Installation
@@ -45,7 +45,8 @@ Puis selectionner le code postal de la commune dont on souhaite obtenir les donn
 
 ### Données
 
-Les informations présentées sont les niveaux de pollution sur une échelle de 1 (Bon) à 5 (Trés Mauvais)
-Le libellé du niveau est présent sous forme d'attribut du sensor. Egalement présent dans les attributs la date et heure (UTC) de la mise à jour des données par AtmoFrance. **Les données sont mise à jour une fois par jour par AtmoFrance**
+Les informations présentées sont les niveaux de pollution sur une échelle de 1 (Bon) à 5 (Trés Mauvais).
+
+Le libellé du niveau est présent sous forme d'attribut du sensor. Est également présent dans les attributs, la date et heure (UTC) de la mise à jour des données par AtmoFrance. **Les données sont mise à jour une fois par jour par AtmoFrance**
 
 ![image info](/img/attributs.png)
