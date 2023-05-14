@@ -65,10 +65,7 @@ class AtmoFranceEntity(CoordinatorEntity, SensorEntity):
         self._coordinator = coordinator
         self._attr_attribution = f"{ATTRIBUTION}- {self._coordinator.api.source}"
         self._attr_device_class = description.device_class
-        self._attr_extra_state_attributes = {
-            "Date de mise à jour": self._coordinator.api.last_update,
-            "Libellé": self._level2string(self.native_value),
-        }
+
         self._attr_device_info = DeviceInfo(
             name=TITLE,
             entry_type=DeviceEntryType.SERVICE,
@@ -78,12 +75,20 @@ class AtmoFranceEntity(CoordinatorEntity, SensorEntity):
             manufacturer=f"{ATTRIBUTION}-{coordinator.api.source}",
             model=MODEL,
         )
-        _LOGGER.debug("Creating an atmo France sensor, named %s", self.name)
+        _LOGGER.debug("Creating an atmo France sensor, named %s", self._attr_name)
 
     @property
     def native_value(self):
         value = self._coordinator.api.get_key(self.entity_description.json_key)
+        _LOGGER.debug("Value for sensor %s is now %s",self._attr_name, value)
         return value
+
+    @property
+    def extra_state_attributes(self):
+        return {
+            "Date de mise à jour": self._coordinator.api.last_update,
+            "Libellé": self._level2string(self.native_value),
+        }
 
     def _level2string(self, value):
         if value != "":
