@@ -24,7 +24,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         entry,
     )
     hass.data.setdefault(DOMAIN, {})
-    api = AtmoFranceDataApi(entry.data)
+    api = AtmoFranceDataApi(entry.data, hass=hass)
     if entry.entry_id not in hass.data[DOMAIN]:
         hass.data[DOMAIN][entry.entry_id] = {}
         hass.data[DOMAIN][entry.entry_id][

@@ -1,8 +1,10 @@
 import logging
-from datetime import date
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import aiohttp
 from aiohttp.client import ClientTimeout, ClientError
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
+from homeassistant.core import HomeAssistant
 from .const import AUTH_URL, DATA_URL, API_GOUV_URL
 
 DEFAULT_TIMEOUT = 120
@@ -15,7 +17,7 @@ class AtmoFranceDataApi:
     """Api to get AirAtmo data"""
 
     def __init__(
-        self, config, session: aiohttp.ClientSession = None, timeout=CLIENT_TIMEOUT
+        self, config, session: aiohttp.ClientSession = None, timeout=CLIENT_TIMEOUT, hass: HomeAssistant =None
     ) -> None:
         self._timeout = timeout
         if session is not None:
@@ -25,6 +27,7 @@ class AtmoFranceDataApi:
         self._config = config
         self._token = None
         self._data = None
+        self._hass= hass
 
     async def async_get_token(self):
         """Get user token to allow request"""
@@ -50,7 +53,7 @@ class AtmoFranceDataApi:
         """Get Data from AtmoFrance API"""
         await self.async_get_token()  # Always called to be sure to have a valid token
         headers = {"Authorization": f"Bearer {self._token}"}
-        today = date.today().strftime("%Y-%m-%d")
+        today = datetime.now(ZoneInfo(self._hass.config.time_zone)).strftime("%Y-%m-%d")
         url = f'{DATA_URL}/{{"code_zone":{{"operator":"=","value":"{insee_code}"}},"date_ech":{{"operator":">=","value":"{today}"}}}}?withGeom=false'
         _LOGGER.debug("Getting data from %s", url)
         try:
