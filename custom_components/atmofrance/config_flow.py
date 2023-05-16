@@ -26,7 +26,7 @@ async def validate_credentials(hass: HomeAssistant, data: dict) -> None:
     """Validate user credential to access API"""
     session = async_get_clientsession(hass)
     try:
-        client = AtmoFranceDataApi(data, session)
+        client = AtmoFranceDataApi(data, session,hass=hass)
         await client.async_get_token()
     except ValueError as exc:
         raise exc
