@@ -7,9 +7,9 @@ Voir https://www.atmo-france.org/ pour l'accès web.
 
 L'intégration expose les données d'Atmo France pour une commune donnée.
 Les données exposés sont :
-- Niveau de pollution Dioxide d'Azote (NO<sub>2</sub>)
+- Niveau de pollution Dioxyde d'Azote (NO<sub>2</sub>)
 - Niveau de pollution Ozone (O<sub>3</sub>)
-- Niveau de pollution Dioxide de Souffre (SO<sub>2</sub>)
+- Niveau de pollution Dioxyde de Souffre (SO<sub>2</sub>)
 - Niveau de pollution Particules fines <2.5 µm (Pm25)
 - Niveau de pollution Particules fines <10 µm (Pm10)
 - Niveau global de qualité de l'air.

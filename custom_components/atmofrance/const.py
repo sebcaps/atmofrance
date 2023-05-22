@@ -44,7 +44,7 @@ class AtmoFranceSensorEntityDescription(
 POLLUTION_SENSORS: tuple[AtmoFranceSensorEntityDescription, ...] = (
     AtmoFranceSensorEntityDescription(
         key="code_no2",
-        name="Dioxide d'azote",
+        name="Dioxyde d'azote",
         device_class=SensorDeviceClass.AQI,
         icon="mdi:molecule",
         state_class=SensorStateClass.MEASUREMENT,
