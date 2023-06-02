@@ -2,7 +2,7 @@
     "config": {
         "error": {
             "auth": "Impossible to get auth token. Check your credentials",
-            "noinsee": "Impossible to get INSEE code. Check zip code and logs."
+            "noinsee": "Impossible to get INSEE code. Check ZIP code and logs."
         },
         "step": {
             "user": {
@@ -15,16 +15,16 @@
             },
             "location": {
                 "data": {
-                    "code_postal": "Zip Code"
+                    "code_postal": "ZIP code"
                 },
-                "description": "Set your zip code",
+                "description": "Set your ZIP code",
                 "title": "Location"
             },
             "multilocation": {
                 "data": {
                     "city": "City"
                 },
-                "title": "Many code found",
+                "title": "Many codes found",
                 "description": "Select the city"
             }
         }
