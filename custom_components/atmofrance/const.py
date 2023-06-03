@@ -76,7 +76,7 @@ POLLUTION_SENSORS: tuple[AtmoFranceSensorEntityDescription, ...] = (
     ),
     AtmoFranceSensorEntityDescription(
         key="code_so2",
-        name="Dioxyde de souffre",
+        name="Dioxyde de soufre",
         device_class=SensorDeviceClass.AQI,
         icon="mdi:molecule",
         state_class=SensorStateClass.MEASUREMENT,

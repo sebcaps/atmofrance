@@ -2,7 +2,7 @@
     "config": {
         "error": {
             "auth": "Impossible de recupérer le token. Vérifiez vos identifiants",
-            "noinsee": "Impossible de recupérer le code INSEE. Vérifiez le code postal et les logs.."
+            "noinsee": "Impossible de récupérer le code INSEE. Vérifiez le code postal et les logs."
         },
         "step": {
             "user": {
@@ -15,7 +15,7 @@
             },
             "location": {
                 "data": {
-                    "code_postal": "Code Postal"
+                    "code_postal": "Code postal"
                 },
                 "description": "Saisissez votre code postal",
                 "title": "Localisation"
