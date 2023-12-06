@@ -1,0 +1,32 @@
+{
+    "config": {
+        "error": {
+            "auth": "Impossivel obter o token de autenticação verifica as tuas credenciais",
+            "noinsee": "Impossivel obter o código INSEE verifica o teu código portal ou então os logs."
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "username": "Utilizador",
+                    "password": "Senha"
+                },
+                "description": "Inserir as tuas cedenciais do Atmo Dat",
+                "title": "Autenticação"
+            },
+            "location": {
+                "data": {
+                    "code_postal": "Código Postalç"
+                },
+                "description": "Define o teu código postal",
+                "title": "Localização"
+            },
+            "multilocation": {
+                "data": {
+                    "city": "Cidade"
+                },
+                "title": "Muitos Resultados encontrados",
+                "description": "Seleciona a cidade"
+            }
+        }
+    }
+}
