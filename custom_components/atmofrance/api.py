@@ -17,7 +17,11 @@ class AtmoFranceDataApi:
     """Api to get AirAtmo data"""
 
     def __init__(
-        self, config, session: aiohttp.ClientSession = None, timeout=CLIENT_TIMEOUT, hass: HomeAssistant =None
+        self,
+        config,
+        session: aiohttp.ClientSession = None,
+        timeout=CLIENT_TIMEOUT,
+        hass: HomeAssistant = None,
     ) -> None:
         self._timeout = timeout
         if session is not None:
@@ -27,7 +31,7 @@ class AtmoFranceDataApi:
         self._config = config
         self._token = None
         self._data = None
-        self._hass= hass
+        self._hass = hass
 
     async def async_get_token(self):
         """Get user token to allow request"""
@@ -101,6 +105,13 @@ class AtmoFranceDataApi:
         """Get value of data update"""
         if self._data is not None:
             return self._data["properties"]["date_maj"]
+        return ""
+
+    @property
+    def color(self):
+        """Get value of data update"""
+        if self._data is not None:
+            return self._data["properties"]["coul_qual"]
         return ""
 
 

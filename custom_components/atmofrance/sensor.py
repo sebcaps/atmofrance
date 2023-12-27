@@ -94,6 +94,7 @@ class AtmoFranceEntity(CoordinatorEntity, SensorEntity):
         return {
             "Date de mise à jour": self._coordinator.api.last_update,
             "Libellé": self._level2string(self.native_value),
+            "Couleur": self._coordinator.api.color,
         }
 
     def _level2string(self, value):
