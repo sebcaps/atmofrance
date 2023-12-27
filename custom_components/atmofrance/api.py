@@ -107,13 +107,6 @@ class AtmoFranceDataApi:
             return self._data["properties"]["date_maj"]
         return ""
 
-    @property
-    def color(self):
-        """Get value of data update"""
-        if self._data is not None:
-            return self._data["properties"]["coul_qual"]
-        return ""
-
 
 class INSEEAPI:
     """Api to get INSEE data"""

@@ -33,6 +33,17 @@ QUALITY_LEVEL = {
     6: "Extrêmement mauvais",
     8: "Évènement",
 }
+
+QUALITY_LEVEL_COLOR = {
+    0: "#ddd",
+    1: "#50f0e6",
+    2: "#50ccaa",
+    3: "#f0e641",
+    4: "#ff5050",
+    5: "#960032",
+    6: "#7d2181",
+    8: "#888",
+}
 REFRESH_INTERVALL = 60
 
 
