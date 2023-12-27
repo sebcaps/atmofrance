@@ -23,7 +23,16 @@ MODEL = "Atmo France API"
 CONF_INSEE_CODE = "INSEE"
 CONF_CITY = "city"
 TITLE = "Atmo France"
-QUALITY_LEVEL = {1: "Bon", 2: "Moyen", 3: "Dégradé", 4: "Mauvais", 5: "Trés Mauvais"}
+QUALITY_LEVEL = {
+    0: "Indisponible",
+    1: "Bon",
+    2: "Moyen",
+    3: "Dégradé",
+    4: "Mauvais",
+    5: "Trés Mauvais",
+    6: "Extrêmement mauvais",
+    8: "Évènement",
+}
 REFRESH_INTERVALL = 60
 
 
