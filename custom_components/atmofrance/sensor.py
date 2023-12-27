@@ -79,8 +79,14 @@ class AtmoFranceEntity(CoordinatorEntity, SensorEntity):
 
     @property
     def native_value(self):
-        value = self._coordinator.api.get_key(self.entity_description.json_key)
-        _LOGGER.debug("Value for sensor %s is now %s",self._attr_name, value)
+        if self._coordinator.api.get_key(self.entity_description.json_key):
+            value = self._coordinator.api.get_key(self.entity_description.json_key)
+        else:
+            value = 0
+            _LOGGER.warning(
+                "Unable to get value for %s. Force value to 0", self._attr_name
+            )
+        _LOGGER.debug("Value for sensor %s is now %s", self._attr_name, value)
         return value
 
     @property
@@ -91,7 +97,4 @@ class AtmoFranceEntity(CoordinatorEntity, SensorEntity):
         }
 
     def _level2string(self, value):
-        if value != "":
-            return QUALITY_LEVEL[value]
-        else:
-            return ""
+        return QUALITY_LEVEL[value]
