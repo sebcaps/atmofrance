@@ -20,6 +20,7 @@ from .const import (
     CONF_CITY,
     CONF_INSEE_CODE,
     QUALITY_LEVEL,
+    QUALITY_LEVEL_COLOR,
     MODEL,
     TITLE,
     AtmoFranceSensorEntityDescription,
@@ -94,8 +95,11 @@ class AtmoFranceEntity(CoordinatorEntity, SensorEntity):
         return {
             "Date de mise à jour": self._coordinator.api.last_update,
             "Libellé": self._level2string(self.native_value),
-            "Couleur": self._coordinator.api.color,
+            "Couleur": self._level2color(self.native_value),
         }
 
     def _level2string(self, value):
         return QUALITY_LEVEL[value]
+
+    def _level2color(self, value):
+        return QUALITY_LEVEL_COLOR[value]
