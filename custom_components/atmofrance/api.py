@@ -107,6 +107,20 @@ class AtmoFranceDataApi:
             return self._data["properties"]["date_maj"]
         return ""
 
+    @property
+    def type_zone(self):
+        """Get type of zone"""
+        if self._data is not None:
+            return self._data["properties"]["type_zone"]
+        return ""
+
+    @property
+    def nom_zone(self):
+        """Get Name of Zone"""
+        if self._data is not None:
+            return self._data["properties"]["lib_zone"]
+        return ""
+
 
 class INSEEAPI:
     """Api to get INSEE data"""
@@ -122,7 +136,7 @@ class INSEEAPI:
 
     async def get_data(self, zipcode) -> dict:
         """Get INSEE code for a given zip code"""
-        url = f"{API_GOUV_URL}codePostal={zipcode}&fields=s=code,nom&format=json&geometry=centre"
+        url = f"{API_GOUV_URL}codePostal={zipcode}&fields=code,nom,codeEpci&format=json&geometry=centre"
         result = await self._session.get(url)
         if result.status == 200:
             json = await result.json()

@@ -96,6 +96,8 @@ class AtmoFranceEntity(CoordinatorEntity, SensorEntity):
             "Date de mise à jour": self._coordinator.api.last_update,
             "Libellé": self._level2string(self.native_value),
             "Couleur": self._level2color(self.native_value),
+            "Type de zone": self._coordinator.api.type_zone,
+            "Nom de la zone": self._coordinator.api.nom_zone,
         }
 
     def _level2string(self, value):

@@ -6,7 +6,15 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import callback
-from .const import DOMAIN, TITLE, CONF_INSEE_CODE, CONF_CODE_POSTAL, CONF_CITY
+
+from .const import (
+    DOMAIN,
+    TITLE,
+    CONF_INSEE_CODE,
+    CONF_CODE_POSTAL,
+    CONF_CITY,
+    CONF_INSEE_EPCI,
+)
 from .api import AtmoFranceDataApi, INSEEAPI
 
 _LOGGER = logging.getLogger(__name__)
@@ -17,16 +25,14 @@ AUTHENT_SCHEMA = vol.Schema(
         vol.Required(CONF_PASSWORD, default=""): cv.string,
     }
 )
-ZIPCODE_SCHEMA = vol.Schema(
-    {vol.Required(CONF_CODE_POSTAL, default=""): cv.string}
-)
+ZIPCODE_SCHEMA = vol.Schema({vol.Required(CONF_CODE_POSTAL, default=""): cv.string})
 
 
 async def validate_credentials(hass: HomeAssistant, data: dict) -> None:
     """Validate user credential to access API"""
     session = async_get_clientsession(hass)
     try:
-        client = AtmoFranceDataApi(data, session,hass=hass)
+        client = AtmoFranceDataApi(data, session, hass=hass)
         await client.async_get_token()
     except ValueError as exc:
         raise exc
@@ -43,7 +49,7 @@ async def get_insee_code(hass: HomeAssistant, data: dict) -> None:
 
 
 def _build_place_key(city) -> str:
-    return f"{city['code']};{city['nom']}"
+    return f"{city['code']};{city['nom']};{city['codeEpci']}"
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -132,4 +138,5 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         city_infos = user_input[CONF_CITY].split(";")
         self.data[CONF_INSEE_CODE] = city_infos[0]
         self.data[CONF_CITY] = city_infos[1]
+        self.data[CONF_INSEE_EPCI] = city_infos[2]
         return await self.async_step_location(self.data)
