@@ -43,6 +43,13 @@ Puis sélectionner le code postal de la commune dont on souhaite obtenir les don
 
 ![image info](/img/multiloc.png)
 
+
+>**Note:**
+> Pour certaines région (Occitanie, Bretagne), les données sont disponibles au niveau de l'[EPCI](https://www.insee.fr/fr/metadonnees/definition/c1160#:~:text=Les%20%C3%A9tablissements%20publics%20de%20coop%C3%A9ration,%C3%A0%20celles%20de%20collectivit%C3%A9s%20locales) et non de la commune.
+> L'intégration le detecte automatiquement et affiche les donnée de l'EPCI à laquelle la commune appartient.
+>
+> La configuration se fait toujours par le code postal de la commune, mais l'extraction des données au niveau EPCI.
+
 ### Données
 
 Les informations présentées sont les niveaux de pollution sur une échelle de 1 (Bon) à 6 (Extrêmement Mauvais), avec 0 (Indisponible) et 8 (événement).
@@ -51,6 +58,8 @@ Les attributs suivants sont disponible:
 - Le libellé du niveau
 - La date et heure (UTC) de la mise à jour des données par AtmoFrance. **Les données sont mises à jour une fois par jour par Atmo France.**
 - La couleur associée au niveau de pollution (couleurs 'officielles' d'atmo france, au format hexadécimal)
+- Le type de zone (commune ou EPCI)
+- Le nom de la zone
 
 ![image info](/img/attributs.png)
 

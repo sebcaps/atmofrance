@@ -8,7 +8,14 @@ from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import AtmoFranceDataApi
-from .const import DOMAIN, PLATFORMS, CONF_INSEE_CODE, REFRESH_INTERVALL, NAME
+from .const import (
+    DOMAIN,
+    PLATFORMS,
+    CONF_INSEE_CODE,
+    REFRESH_INTERVALL,
+    NAME,
+    CONF_INSEE_EPCI,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,10 +33,29 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data.setdefault(DOMAIN, {})
     api = AtmoFranceDataApi(entry.data, hass=hass)
     if entry.entry_id not in hass.data[DOMAIN]:
+        # Get data for city
+        databycity = await api.get_data(entry.data[CONF_INSEE_CODE])
+        if (
+            databycity is not None and len(databycity) > 0
+        ):  # data exist for city, use it
+            _LOGGER.info("Use City code: %s as  source", entry.data[CONF_INSEE_CODE])
+            source = CONF_INSEE_CODE
+        else:  # Get data for EPCI (communauté de commune)
+            databyepci = await api.get_data(entry.data[CONF_INSEE_EPCI])
+            if databyepci is not None and len(databyepci) > 0:
+                source = CONF_INSEE_EPCI
+                _LOGGER.info("Use EPCI code: %s as source", entry.data[CONF_INSEE_EPCI])
+            else:
+                _LOGGER.error(
+                    "Impossible de récupérer les données pour la ville %s ou l'EPCI %s",
+                    entry.data[CONF_INSEE_CODE],
+                    entry.data[CONF_INSEE_EPCI],
+                )
+
         hass.data[DOMAIN][entry.entry_id] = {}
         hass.data[DOMAIN][entry.entry_id][
             "atmofrancecoordinator"
-        ] = AtmoFranceApiCoordinator(hass=hass, config=entry, api=api)
+        ] = AtmoFranceApiCoordinator(hass=hass, config=entry, api=api, source=source)
     await hass.data[DOMAIN][entry.entry_id][
         "atmofrancecoordinator"
     ].async_config_entry_first_refresh()
@@ -43,7 +69,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 class AtmoFranceApiCoordinator(DataUpdateCoordinator):
     """A coordinator to fetch data from the api only once"""
 
-    def __init__(self, hass, config: ConfigType, api):
+    def __init__(self, hass, config: ConfigType, api, source):
         super().__init__(
             hass,
             _LOGGER,
@@ -54,15 +80,15 @@ class AtmoFranceApiCoordinator(DataUpdateCoordinator):
         self.config = config
         self.hass = hass
         self.api = api
-
+        self._source = source
 
     async def _update_method(self):
-        data = await self.api.get_data(self.config.data[CONF_INSEE_CODE])
+        data = await self.api.get_data(self.config.data[self._source])
         if data is not None and len(data) > 0:
             return True
         else:
             self.async_set_update_error(
-                f'No Data from Atmo France for INSEE code {self.config.data[CONF_INSEE_CODE]} and date {date.today().strftime("%Y-%m-%d")}'
+                f'No Data from Atmo France for INSEE code {self.config.data[self._source]} and date {date.today().strftime("%Y-%m-%d")}'
             )
             return False
 

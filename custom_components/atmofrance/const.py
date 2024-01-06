@@ -21,6 +21,7 @@ CONF_CODE_POSTAL = "Code postal"
 ATTRIBUTION = "Atmo France"
 MODEL = "Atmo France API"
 CONF_INSEE_CODE = "INSEE"
+CONF_INSEE_EPCI = "INSEE EPCI"
 CONF_CITY = "city"
 TITLE = "Atmo France"
 QUALITY_LEVEL = {
