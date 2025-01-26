@@ -14,10 +14,13 @@ Les données exposés sont :
 - Niveau de pollution Particules fines <10 µm (Pm10)
 - Niveau global de qualité de l'air.
 
+![downloads](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.atmofrance.total)
+
 ## Installation
 
 Utilisez [hacs](https://hacs.xyz/).
 [![Ouvrez votre instance Home Assistant et ouvrez un référentiel dans la boutique communautaire Home Assistant.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=sebcaps&repository=atmofrance&category=integration)
+
 
 ## Configuration
 
