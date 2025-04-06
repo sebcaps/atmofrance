@@ -1,4 +1,6 @@
 # Atmo France pour Home Assistant
+![downloads](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.atmofrance.total)
+
 
 Composant pour exposer les niveaux de pollution atmosphérique et alerte pollen prévus pour le jour même.
 
