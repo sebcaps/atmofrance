@@ -1,18 +1,34 @@
 # Atmo France pour Home Assistant
 
-Composant pour exposer les niveaux de pollution prévus pour le jour même.
+Composant pour exposer les niveaux de pollution atmosphérique et alerte pollen prévus pour le jour même.
 
 Données fournies par Atmo France et les agences régionales.
 Voir https://www.atmo-france.org/ pour l'accès web.
 
 L'intégration expose les données d'Atmo France pour une commune donnée.
-Les données exposées sont :
+Les données exposées pour la pollution de l'air sont :
 - Niveau de pollution Dioxyde d'Azote (NO<sub>2</sub>)
 - Niveau de pollution Ozone (O<sub>3</sub>)
 - Niveau de pollution Dioxyde de Soufre (SO<sub>2</sub>)
 - Niveau de pollution Particules fines <2.5 µm (Pm25)
 - Niveau de pollution Particules fines <10 µm (Pm10)
 - Niveau global de qualité de l'air
+
+Les données exposées pour les pollens  sont :
+- Concentration en Ambroisie (µg/m<sup>3</sup>)
+- Concentration en Armoise (µg/m<sup>3</sup>)
+- Concentration en Aulne (µg/m<sup>3</sup>)
+- Concentration en Bouleau (µg/m<sup>3</sup>)
+- Concentration en Graminé (µg/m<sup>3</sup>)
+- Concentration en Olivier (µg/m<sup>3</sup>)
+- Niveau Ambroisie
+- Niveau Armoise
+- Niveau Aulne
+- Niveau Bouleau
+- Niveau Graminé
+- Niveau Olivier
+- Qualité globale Pollen
+
 
 ## Installation
 
@@ -43,12 +59,19 @@ Puis sélectionner le code postal de la commune dont on souhaite obtenir les don
 
 ![image info](/img/multiloc.png)
 
-
 >**Note:**
 > Pour certaines région (Occitanie, Bretagne), les données sont disponibles au niveau de l'[EPCI](https://www.insee.fr/fr/metadonnees/definition/c1160#:~:text=Les%20%C3%A9tablissements%20publics%20de%20coop%C3%A9ration,%C3%A0%20celles%20de%20collectivit%C3%A9s%20locales) et non de la commune.
 > L'intégration le detecte automatiquement et affiche les donnée de l'EPCI à laquelle la commune appartient.
 >
 > La configuration se fait toujours par le code postal de la commune, mais l'extraction des données au niveau EPCI.
+
+Enfin, il faut séléctionner le type d'informations souhaité les indicateurs de pollution et/ou les données concernant les pollens.
+
+![image info](/img/typeindicateur.png)
+>**Note :**
+>Lors de la mise à jour du composant, seul les données pollution sont actives. Pour rajouter les données pollen, passer par le menu *Configuer* de l'entité et activer les indicateurs pollens.
+
+![image info](/img/configuration.png)
 
 ### Données
 
@@ -65,8 +88,13 @@ Les attributs suivants sont disponible:
 
 ### Suggestion d'affichage
 
+#### Pollution
 
 ![Dashboard](img/dashboard.png)
+### Pollen
+
+![alt text](img/dashboard2.png)
+
 :warning: **Prérequis** Cet affichage se base sur les composants:
  - [custom-button-card](https://github.com/custom-cards)
  - [decluttering-card](https://github.com/custom-cards/decluttering-card)

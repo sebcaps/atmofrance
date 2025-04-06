@@ -2,7 +2,8 @@
     "config": {
         "error": {
             "auth": "Impossible to get auth token. Check your credentials",
-            "noinsee": "Impossible to get INSEE code. Check ZIP code and logs."
+            "noinsee": "Impossible to get INSEE code. Check ZIP code and logs.",
+            "need_one_option": "At least one option must be selected"
         },
         "step": {
             "user": {
@@ -26,6 +27,28 @@
                 },
                 "title": "Many codes found",
                 "description": "Select the city"
+            },
+            "sensors_type": {
+                "data": {
+                    "include_pollution": "Pollution indicators",
+                    "include_pollen": "pollen indicators"
+                },
+                "title": "Indicator type selection",
+                "description": "Select sensor type"
+            }
+        }
+    },
+    "options": {
+        "error": {
+            "need_one_option": "At least one option must be selected"
+        },
+        "step": {
+            "init": {
+                "data": {
+                    "include_pollution": "Pollution indicators",
+                    "include_pollen": "pollen indicators"
+                },
+                "description": "Select sensor type"
             }
         }
     }
