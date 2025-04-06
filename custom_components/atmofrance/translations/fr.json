@@ -2,7 +2,8 @@
     "config": {
         "error": {
             "auth": "Impossible de recupérer le token. Vérifiez vos identifiants",
-            "noinsee": "Impossible de récupérer le code INSEE. Vérifiez le code postal et les logs."
+            "noinsee": "Impossible de récupérer le code INSEE. Vérifiez le code postal et les logs.",
+            "need_one_option": "Au moins un des deux indicateurs doit être actif"
         },
         "step": {
             "user": {
@@ -26,6 +27,28 @@
                 },
                 "title": "Plusieurs codes INSEE trouvés pour ce code postal",
                 "description": "Sélectionnez la commune"
+            },
+            "sensors_type": {
+                "data": {
+                    "include_pollution": "Indicateurs de pollution",
+                    "include_pollen": "Indicateurs pollen"
+                },
+                "title": "Sélection des indicateurs",
+                "description": "Selectionnez les indicateurs à inclure"
+            }
+        }
+    },
+    "options": {
+        "error": {
+            "need_one_option": "Au moins un des deux indicateurs doit être actif"
+        },
+        "step": {
+            "init": {
+                "data": {
+                    "include_pollution": "Indicateurs de pollution",
+                    "include_pollen": "Indicateurs pollen"
+                },
+                "description": "Selectionnez les types à inclure"
             }
         }
     }

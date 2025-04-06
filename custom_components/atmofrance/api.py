@@ -5,7 +5,7 @@ import aiohttp
 from aiohttp.client import ClientTimeout, ClientError
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
-from .const import AUTH_URL, DATA_URL, API_GOUV_URL
+from .const import AUTH_URL, DATA_URL, API_GOUV_URL, URL_CODE
 
 DEFAULT_TIMEOUT = 120
 CLIENT_TIMEOUT = ClientTimeout(total=DEFAULT_TIMEOUT)
@@ -53,18 +53,21 @@ class AtmoFranceDataApi:
             )
             raise ValueError
 
-    async def get_data(self, insee_code) -> dict:
+    async def get_data(self, insee_code, type: URL_CODE) -> dict:
         """Get Data from AtmoFrance API"""
         await self.async_get_token()  # Always called to be sure to have a valid token
         headers = {"Authorization": f"Bearer {self._token}"}
-        today = datetime.now(ZoneInfo(self._hass.config.time_zone)).strftime("%Y-%m-%d")
-        url = f'{DATA_URL}/{{"code_zone":{{"operator":"=","value":"{insee_code}"}},"date_ech":{{"operator":">=","value":"{today}"}}}}?withGeom=false'
+        today = datetime.now(
+            ZoneInfo(self._hass.config.time_zone)).strftime("%Y-%m-%d")
+        url = f'{DATA_URL}/{type.value}/{{"code_zone":{{"operator":"=","value":"{
+            insee_code}"}},"date_ech":{{"operator":">=","value":"{today}"}}}}?withGeom=false'
         _LOGGER.debug("Getting data from %s", url)
         try:
             result = await self._session.get(url, headers=headers)
             json = await result.json()
             _LOGGER.debug("Got response %s ", json)
-            _LOGGER.debug("Extracting data for INSEE %s and date %s", insee_code, today)
+            _LOGGER.debug(
+                "Extracting data for INSEE %s and date %s", insee_code, today)
             if len(json["features"]) > 0:  # At least one result
                 # Extract data for current day
                 self._data = next(
@@ -81,7 +84,8 @@ class AtmoFranceDataApi:
                 )
             else:  # no result
                 self._data = None
-                _LOGGER.warning("No data for INSEE %s and date %s", insee_code, today)
+                _LOGGER.warning(
+                    "No data for INSEE %s and date %s", insee_code, today)
             return json["features"]
         except ClientError as err:
             return err
@@ -136,7 +140,8 @@ class INSEEAPI:
 
     async def get_data(self, zipcode) -> dict:
         """Get INSEE code for a given zip code"""
-        url = f"{API_GOUV_URL}codePostal={zipcode}&fields=code,nom,codeEpci&format=json&geometry=centre"
+        url = f"{API_GOUV_URL}codePostal={
+            zipcode}&fields=code,nom,codeEpci&format=json&geometry=centre"
         result = await self._session.get(url)
         if result.status == 200:
             json = await result.json()
@@ -146,5 +151,6 @@ class INSEEAPI:
                 raise ValueError
             return json
         else:
-            _LOGGER.error("Failed to get INSEE data, with status %s ", result.status)
+            _LOGGER.error(
+                "Failed to get INSEE data, with status %s ", result.status)
             raise ValueError

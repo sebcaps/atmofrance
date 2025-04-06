@@ -1,6 +1,7 @@
 {
 	"name": "AtmoFrance ",
-	"image": "mcr.microsoft.com/devcontainers/python:0-3.11",
+	// "image": "mcr.microsoft.com/devcontainers/python:0-3.11",
+	"image": "mcr.microsoft.com/devcontainers/python:3.13",
 	"appPort": [
 		"9123:8123"
 	],

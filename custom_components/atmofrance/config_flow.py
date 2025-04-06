@@ -2,8 +2,16 @@ import logging
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant import config_entries
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlow,
+)
+
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import selector
+
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import callback
 
@@ -14,6 +22,8 @@ from .const import (
     CONF_CODE_POSTAL,
     CONF_CITY,
     CONF_INSEE_EPCI,
+    CONF_INCLUDE_POLLEN,
+    CONF_INCLUDE_POLLUTION,
 )
 from .api import AtmoFranceDataApi, INSEEAPI
 
@@ -25,7 +35,16 @@ AUTHENT_SCHEMA = vol.Schema(
         vol.Required(CONF_PASSWORD, default=""): cv.string,
     }
 )
-ZIPCODE_SCHEMA = vol.Schema({vol.Required(CONF_CODE_POSTAL, default=""): cv.string})
+ZIPCODE_SCHEMA = vol.Schema(
+    {vol.Required(CONF_CODE_POSTAL, default=""): cv.string})
+
+
+INCLUDED_SENSOR_SCHEMA = vol.Schema(
+    {
+        vol.Optional(CONF_INCLUDE_POLLUTION): selector.BooleanSelector(),
+        vol.Optional(CONF_INCLUDE_POLLEN): selector.BooleanSelector(),
+    }
+)
 
 
 async def validate_credentials(hass: HomeAssistant, data: dict) -> None:
@@ -52,14 +71,22 @@ def _build_place_key(city) -> str:
     return f"{city['code']};{city['nom']};{city['codeEpci']}"
 
 
-class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class ConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for AirAtmo."""
+    VERSION = 2
 
     def __init__(self):
         """Initialize"""
         self.data = None
+        self.option = {}
         self._init_info = {}
         self.city_insee = []
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry: ConfigEntry):
+        """Return Option handler."""
+        return ConfigOptionFlowHandler()
 
     @callback
     def _show_setup_form(self, step_id=None, user_input=None, schema=None, errors=None):
@@ -108,9 +135,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     return self._show_setup_form(
                         "location", user_input, ZIPCODE_SCHEMA, errors
                     )
-            return self.async_create_entry(
-                title=f"{TITLE} - {self.data.get(CONF_CITY)}", data=self.data
-            )
+            return await self.async_step_sensors_type()
         return self._show_setup_form("location", None, ZIPCODE_SCHEMA, errors)
 
     async def async_step_multilocation(self, user_input=None):
@@ -140,3 +165,36 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self.data[CONF_CITY] = city_infos[1]
         self.data[CONF_INSEE_EPCI] = city_infos[2]
         return await self.async_step_location(self.data)
+
+    async def async_step_sensors_type(self, user_input=None):
+        """Handle sensor step"""
+        errors = {}
+        if user_input is not None:
+            if not (user_input.get(CONF_INCLUDE_POLLUTION) or user_input.get(CONF_INCLUDE_POLLEN)):
+                errors["base"] = "need_one_option"
+            else:
+                self.option[CONF_INCLUDE_POLLUTION] = True if user_input.get(
+                    CONF_INCLUDE_POLLUTION) is not None else False
+                self.option[CONF_INCLUDE_POLLEN] = True if user_input.get(
+                    CONF_INCLUDE_POLLEN) is not None else False
+                return self.async_create_entry(
+                    title=f"{TITLE} - {self.data.get(CONF_CITY)}", data=self.data, options=self.option
+                )
+        return self._show_setup_form("sensors_type", user_input, INCLUDED_SENSOR_SCHEMA, errors)
+
+
+class ConfigOptionFlowHandler(OptionsFlow):
+    """Handle a update flow for AirAtmo."""
+
+    async def async_step_init(self, user_input) -> ConfigFlowResult:
+        errors = {}
+        newOpt = {}
+        if user_input is not None:
+            newOpt[CONF_INCLUDE_POLLUTION] = user_input.get(
+                CONF_INCLUDE_POLLUTION)
+            newOpt[CONF_INCLUDE_POLLEN] = user_input.get(
+                CONF_INCLUDE_POLLEN)
+
+            return self.async_create_entry(title=self.config_entry.title, data=newOpt)
+
+        return self.async_show_form(step_id="init", data_schema=self.add_suggested_values_to_schema(INCLUDED_SENSOR_SCHEMA, self.config_entry.options), errors={})
