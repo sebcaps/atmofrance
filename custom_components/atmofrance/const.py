@@ -49,6 +49,16 @@ QUALITY_LEVEL = {
     8: "Évènement",
 }
 
+QUALITY_POLLEN_LEVEL = {
+    0: "Indisponible",
+    1: "Très faible",
+    2: "Faible",
+    3: "Modéré",
+    4: "Elevé",
+    5: "Trés Elevé",
+    6: "Extrêmement élevé",
+}
+
 QUALITY_LEVEL_COLOR = {
     0: "#ddd",
     1: "#50f0e6",
@@ -126,42 +136,42 @@ POLLUTION_SENSORS: tuple[AtmoFranceSensorEntityDescription, ...] = (
 POLLEN_ALERT_SENSORS: tuple[AtmoFranceSensorEntityDescription, ...] = (
     AtmoFranceSensorEntityDescription(
         key="code_ambr",
-        name="Niveau alerte Ambroisie",
+        name="Niveau Ambroisie",
         device_class=SensorDeviceClass.AQI,
         icon="mdi:alert",
         state_class=SensorStateClass.MEASUREMENT,
         json_key="code_ambr",),
     AtmoFranceSensorEntityDescription(
         key="code_arm",
-        name="Niveau alerte Armoise",
+        name="Niveau Armoise",
         device_class=SensorDeviceClass.AQI,
         icon="mdi:alert",
         state_class=SensorStateClass.MEASUREMENT,
         json_key="code_arm",),
     AtmoFranceSensorEntityDescription(
         key="code_aul",
-        name="Niveau alerte Aulne",
+        name="Niveau Aulne",
         device_class=SensorDeviceClass.AQI,
         icon="mdi:alert",
         state_class=SensorStateClass.MEASUREMENT,
         json_key="code_aul",),
     AtmoFranceSensorEntityDescription(
         key="code_boul",
-        name="Niveau alerte Bouleau",
+        name="Niveau Bouleau",
         device_class=SensorDeviceClass.AQI,
         icon="mdi:alert",
         state_class=SensorStateClass.MEASUREMENT,
         json_key="code_boul",),
     AtmoFranceSensorEntityDescription(
         key="code_gram",
-        name="Niveau alerte Graminé",
+        name="Niveau Graminé",
         device_class=SensorDeviceClass.AQI,
         icon="mdi:alert",
         state_class=SensorStateClass.MEASUREMENT,
         json_key="code_gram",),
     AtmoFranceSensorEntityDescription(
         key="code_oliv",
-        name="Niveau alerte Olivier",
+        name="Niveau Olivier",
         device_class=SensorDeviceClass.AQI,
         icon="mdi:alert",
         state_class=SensorStateClass.MEASUREMENT,

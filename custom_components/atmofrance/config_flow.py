@@ -190,11 +190,14 @@ class ConfigOptionFlowHandler(OptionsFlow):
         errors = {}
         newOpt = {}
         if user_input is not None:
-            newOpt[CONF_INCLUDE_POLLUTION] = user_input.get(
-                CONF_INCLUDE_POLLUTION)
-            newOpt[CONF_INCLUDE_POLLEN] = user_input.get(
-                CONF_INCLUDE_POLLEN)
+            if not (user_input.get(CONF_INCLUDE_POLLUTION) or user_input.get(CONF_INCLUDE_POLLEN)):
+                errors["base"] = "need_one_option"
+            else:
+                newOpt[CONF_INCLUDE_POLLUTION] = user_input.get(
+                    CONF_INCLUDE_POLLUTION)
+                newOpt[CONF_INCLUDE_POLLEN] = user_input.get(
+                    CONF_INCLUDE_POLLEN)
 
-            return self.async_create_entry(title=self.config_entry.title, data=newOpt)
+                return self.async_create_entry(title=self.config_entry.title, data=newOpt)
 
         return self.async_show_form(step_id="init", data_schema=self.add_suggested_values_to_schema(INCLUDED_SENSOR_SCHEMA, self.config_entry.options), errors={})

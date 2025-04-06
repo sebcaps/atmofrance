@@ -26,6 +26,7 @@ from .const import (
     CONF_POLLUTION_COORDINATOR,
     CONF_POLLEN_COORDINATOR,
     QUALITY_LEVEL,
+    QUALITY_POLLEN_LEVEL,
     QUALITY_LEVEL_COLOR,
     MODEL,
     TITLE,
@@ -54,7 +55,7 @@ async def async_setup_entry(
     if entry.options[CONF_INCLUDE_POLLEN]:
         coordinatorpollen = config[CONF_POLLEN_COORDINATOR]
         for sensor_description in POLLEN_ALERT_SENSORS:
-            entities.append(AtmoFranceAlertEntity(
+            entities.append(AtmoFrancePollenLevelEntity(
                 hass, entry, sensor_description, coordinatorpollen))
         for sensor_description in POLLEN_CONC_SENSORS:
             entities.append(AtmoFrancePollenEntity(
@@ -126,6 +127,19 @@ class AtmoFranceAlertEntity(AtmoFranceEntity):
         super().__init__(hass, entry_infos, description, coordinator)
 
     @property
+    def native_value(self):
+        if self._coordinator.api.get_key(self.entity_description.json_key):
+            value = int(self._coordinator.api.get_key(
+                self.entity_description.json_key))
+        else:
+            value = 0
+            _LOGGER.warning(
+                "Unable to get value for %s. Force value to 0", self._attr_name
+            )
+        _LOGGER.debug("Value for sensor %s is now %s", self._attr_name, value)
+        return value
+
+    @property
     def extra_state_attributes(self):
         return {
             "Date de mise à jour": self._coordinator.api.last_update,
@@ -136,6 +150,38 @@ class AtmoFranceAlertEntity(AtmoFranceEntity):
         }
 
 
+class AtmoFrancePollenLevelEntity(AtmoFranceEntity):
+    def __init__(self, hass, entry_infos, description, coordinator):
+        super().__init__(hass, entry_infos, description, coordinator)
+
+    @property
+    def native_value(self):
+        if self._coordinator.api.get_key(self.entity_description.json_key):
+            # Pollen alert levels are expressed as float cast them to int.
+            value = int(self._coordinator.api.get_key(
+                self.entity_description.json_key))
+        else:
+            value = 0
+            _LOGGER.warning(
+                "Unable to get value for %s. Force value to 0", self._attr_name
+            )
+        _LOGGER.debug("Value for sensor %s is now %s", self._attr_name, value)
+        return value
+
+    @property
+    def extra_state_attributes(self):
+        return {
+            "Date de mise à jour": self._coordinator.api.last_update,
+            "Libellé": self._level2string(self.native_value),
+            "Couleur": self._level2color(self.native_value),
+            "Type de zone": self._coordinator.api.type_zone,
+            "Nom de la zone": self._coordinator.api.nom_zone,
+        }
+
+    def _level2string(self, value):
+        return QUALITY_POLLEN_LEVEL[value]
+
+
 class AtmoFrancePollenEntity(AtmoFranceEntity):
     def __init__(self, hass, entry_infos, description, coordinator):
         super().__init__(hass, entry_infos, description, coordinator)
@@ -144,7 +190,6 @@ class AtmoFrancePollenEntity(AtmoFranceEntity):
     def extra_state_attributes(self):
         return {
             "Date de mise à jour": self._coordinator.api.last_update,
-            "Libellé": "libelle",
             "Type de zone": self._coordinator.api.type_zone,
             "Nom de la zone": self._coordinator.api.nom_zone,
         }
