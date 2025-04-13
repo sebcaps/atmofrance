@@ -17,6 +17,8 @@ from .const import (
     CONF_INSEE_EPCI,
     CONF_INCLUDE_POLLEN,
     CONF_INCLUDE_POLLUTION,
+    CONF_INCLUDE_POLLEN_FORECAST,
+    CONF_INCLUDE_POLLUTION_FORECAST,
     CONF_POLLUTION_COORDINATOR,
     CONF_POLLEN_COORDINATOR,
     URL_CODE
@@ -32,9 +34,6 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     _LOGGER.debug("Migrating configuration from version %s.%s",
                   entry.version, entry.minor_version)
-    if entry.version > 1:
-        #     # This means the user has downgraded from a future version
-        return False
 
     if entry.version == 1:  # Migrate from version 1 to version 2
         new = {**entry.options}
@@ -42,6 +41,16 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry):
         new[CONF_INCLUDE_POLLEN] = False
         hass.config_entries.async_update_entry(
             entry, options=new, version=2)
+        return True
+    # Migrate to  version 3  (support for forecast)
+    if entry.version == 2:
+        _LOGGER.debug("Migrating configuration from version %s.%s to version 3",
+                      entry.version, entry.minor_version)
+        new = {**entry.options}
+        new[CONF_INCLUDE_POLLEN_FORECAST] = False
+        new[CONF_INCLUDE_POLLUTION_FORECAST] = False
+        hass.config_entries.async_update_entry(
+            entry, options=new, version=3)
         return True
     return True
 
@@ -58,7 +67,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     if entry.entry_id not in hass.data[DOMAIN]:
         hass.data[DOMAIN][entry.entry_id] = {}
-        if entry.options[CONF_INCLUDE_POLLUTION]:
+        if entry.options[CONF_INCLUDE_POLLUTION] or entry.options[CONF_INCLUDE_POLLUTION_FORECAST]:
             pollutionapi = AtmoFranceDataApi(entry.data, hass=hass)
             # Get pollution data for city
             _LOGGER.info("Getting Pollution data")
@@ -85,7 +94,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 CONF_POLLUTION_COORDINATOR
             ] = AtmoFrancePollutionApiCoordinator(hass=hass, config=entry, api=pollutionapi, source=source)
 
-        if entry.options[CONF_INCLUDE_POLLEN]:
+        if entry.options[CONF_INCLUDE_POLLEN] or entry.options[CONF_INCLUDE_POLLEN_FORECAST]:
             _LOGGER.info("Getting Pollen data")
             pollenapi = AtmoFranceDataApi(entry.data, hass=hass)
 
@@ -117,6 +126,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     _LOGGER.debug("Setup of %s successful", entry.title)
 
     entry.async_on_unload(entry.add_update_listener(update_listener))
+
     return True
 
 
@@ -128,7 +138,11 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """This method is called to clean all sensors before re-adding them"""
     _LOGGER.debug("async_unload_entry method called")
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
+        # Remove config entry from domain.
+        entry = hass.data[DOMAIN].pop(entry.entry_id)
+
+    return unload_ok
 
 
 class AtmoFranceApiCoordinator(DataUpdateCoordinator):

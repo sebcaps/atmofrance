@@ -26,7 +26,6 @@ class URL_CODE(Enum):
 
 API_GOUV_URL = "https://geo.api.gouv.fr/communes?"
 
-
 CONF_CODE_POSTAL = "Code postal"
 ATTRIBUTION = "Atmo France"
 MODEL = "Atmo France API"
@@ -34,11 +33,14 @@ CONF_INSEE_CODE = "INSEE"
 CONF_INSEE_EPCI = "INSEE EPCI"
 CONF_INCLUDE_POLLUTION = "include_pollution"
 CONF_INCLUDE_POLLEN = "include_pollen"
+CONF_INCLUDE_POLLEN_FORECAST = "include_pollen_forecast"
+CONF_INCLUDE_POLLUTION_FORECAST = "include_pollution_forecast"
 CONF_POLLUTION_COORDINATOR = "atmofrancecoordinatorpollution"
 CONF_POLLEN_COORDINATOR = "atmofrancecoordinatorpollen"
 CONF_CITY = "city"
 TITLE = "Atmo France"
-QUALITY_LEVEL = {
+
+POLLUTION_LEVEL = {
     0: "Indisponible",
     1: "Bon",
     2: "Moyen",
@@ -49,7 +51,7 @@ QUALITY_LEVEL = {
     8: "Évènement",
 }
 
-QUALITY_POLLEN_LEVEL = {
+POLLEN_LEVEL = {
     0: "Indisponible",
     1: "Très faible",
     2: "Faible",
@@ -59,7 +61,7 @@ QUALITY_POLLEN_LEVEL = {
     6: "Extrêmement élevé",
 }
 
-QUALITY_LEVEL_COLOR = {
+LEVEL_COLOR = {
     0: "#ddd",
     1: "#50f0e6",
     2: "#50ccaa",
@@ -69,6 +71,7 @@ QUALITY_LEVEL_COLOR = {
     6: "#7d2181",
     8: "#888",
 }
+
 REFRESH_INTERVALL = 60
 
 
@@ -132,7 +135,6 @@ POLLUTION_SENSORS: tuple[AtmoFranceSensorEntityDescription, ...] = (
     ),
 )
 
-
 POLLEN_ALERT_SENSORS: tuple[AtmoFranceSensorEntityDescription, ...] = (
     AtmoFranceSensorEntityDescription(
         key="code_ambr",
@@ -180,6 +182,7 @@ POLLEN_ALERT_SENSORS: tuple[AtmoFranceSensorEntityDescription, ...] = (
         key="code_qual", name="Qualité globale Pollen", icon="mdi:gauge", json_key="code_qual"
     ),
 )
+
 POLLEN_CONC_SENSORS: tuple[AtmoFranceSensorEntityDescription, ...] = (
     AtmoFranceSensorEntityDescription(
         key="conc_ambr",
