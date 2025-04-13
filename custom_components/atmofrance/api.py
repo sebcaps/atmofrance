@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import aiohttp
 from aiohttp.client import ClientTimeout, ClientError
@@ -69,15 +69,9 @@ class AtmoFranceDataApi:
             _LOGGER.debug(
                 "Extracting data for INSEE %s and date %s", insee_code, today)
             if len(json["features"]) > 0:  # At least one result
-                # Extract data for current day
-                self._data = next(
-                    filter(
-                        lambda feat: feat["properties"]["date_ech"] == today,
-                        json["features"],
-                    )
-                )
+                self._data = json
                 _LOGGER.debug(
-                    "Extracted data for INSEE %s and date %s: %s",
+                    "Got data for INSEE %s and date > %s: %s",
                     insee_code,
                     today,
                     self._data,
@@ -90,10 +84,17 @@ class AtmoFranceDataApi:
         except ClientError as err:
             return err
 
-    def get_key(self, key):
-        """Get value for the given key in JSON Data"""
+    def get_key_value(self, key, shift: int = 0):
+        """Get value for the given key in JSON Data for a given date based on shift from today"""
+        extractDate = (datetime.now(
+            ZoneInfo(self._hass.config.time_zone))+timedelta(days=shift)).strftime("%Y-%m-%d")
         if self._data is not None:
-            return self._data.get("properties")[key]
+            extractedData = next(
+                filter(
+                    lambda feat: feat["properties"]["date_ech"] == extractDate,
+                    self._data["features"],
+                ), {"properties": {key: ""}})  # If not found return ''
+            return extractedData.get("properties")[key]
         else:
             return ""
 
@@ -101,28 +102,32 @@ class AtmoFranceDataApi:
     def source(self):
         """Get value for source of data"""
         if self._data is not None:
-            return self._data.get("properties")["source"]
+            # Take the first value, we have multiple ones for forecast
+            return self._data["features"][0]["properties"]["source"]
         return ""
 
     @property
     def last_update(self):
         """Get value of data update"""
         if self._data is not None:
-            return self._data["properties"]["date_maj"]
+            # Take the first value, we have multiple ones for forecast
+            return self._data["features"][0]["properties"]["date_maj"]
         return ""
 
     @property
     def type_zone(self):
         """Get type of zone"""
         if self._data is not None:
-            return self._data["properties"]["type_zone"]
+            # Take the first value, we have multiple ones for forecast
+            return self._data["features"][0]["properties"]["type_zone"]
         return ""
 
     @property
     def nom_zone(self):
         """Get Name of Zone"""
         if self._data is not None:
-            return self._data["properties"]["lib_zone"]
+            # Take the first value, we have multiple ones for forecast
+            return self._data["features"][0]["properties"]["lib_zone"]
         return ""
 
 

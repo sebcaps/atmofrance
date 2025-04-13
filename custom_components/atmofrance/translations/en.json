@@ -35,6 +35,14 @@
                 },
                 "title": "Indicator type selection",
                 "description": "Select sensor type"
+            },
+            "forecast_sensor_type": {
+                "data": {
+                    "include_pollen_forecast": "Pollen forecast",
+                    "include_pollution_forecast": "Pollution forecast"
+                },
+                "title": "Forecast ndicator type selection",
+                "description": "Select sensor type"
             }
         }
     },
@@ -47,6 +55,13 @@
                 "data": {
                     "include_pollution": "Pollution indicators",
                     "include_pollen": "pollen indicators"
+                },
+                "description": "Select sensor type"
+            },
+            "forecast": {
+                "data": {
+                    "include_pollen_forecast": "Pollen forecast",
+                    "include_pollution_forecast": "Pollution forecast"
                 },
                 "description": "Select sensor type"
             }

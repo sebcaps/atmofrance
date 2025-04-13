@@ -35,6 +35,14 @@
                 },
                 "title": "Sélection des indicateurs",
                 "description": "Selectionnez les indicateurs à inclure"
+            },
+            "forecast_sensor_type": {
+                "data": {
+                    "include_pollen_forecast": "Prévisions pollen",
+                    "include_pollution_forecast": "Prévisions pollution"
+                },
+                "title": "Sélection des indicateurs prévisionnels",
+                "description": "Selectionnez les indicateurs à inclure"
             }
         }
     },
@@ -49,6 +57,13 @@
                     "include_pollen": "Indicateurs pollen"
                 },
                 "description": "Selectionnez les types à inclure"
+            },
+            "forecast": {
+                "data": {
+                    "include_pollen_forecast": "Prévisions pollen",
+                    "include_pollution_forecast": "Prévisions pollution"
+                },
+                "description": "Selectionnez les indicateurs de prévision à inclure"
             }
         }
     }

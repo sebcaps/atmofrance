@@ -23,7 +23,9 @@ from .const import (
     CONF_CITY,
     CONF_INSEE_EPCI,
     CONF_INCLUDE_POLLEN,
+    CONF_INCLUDE_POLLEN_FORECAST,
     CONF_INCLUDE_POLLUTION,
+    CONF_INCLUDE_POLLUTION_FORECAST,
 )
 from .api import AtmoFranceDataApi, INSEEAPI
 
@@ -43,6 +45,13 @@ INCLUDED_SENSOR_SCHEMA = vol.Schema(
     {
         vol.Optional(CONF_INCLUDE_POLLUTION): selector.BooleanSelector(),
         vol.Optional(CONF_INCLUDE_POLLEN): selector.BooleanSelector(),
+    }
+)
+
+INCLUDED_FORECAST_SENSOR_SCHEMA = vol.Schema(
+    {
+        vol.Optional(CONF_INCLUDE_POLLUTION_FORECAST): selector.BooleanSelector(),
+        vol.Optional(CONF_INCLUDE_POLLEN_FORECAST): selector.BooleanSelector(),
     }
 )
 
@@ -73,7 +82,7 @@ def _build_place_key(city) -> str:
 
 class ConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for AirAtmo."""
-    VERSION = 2
+    VERSION = 3
 
     def __init__(self):
         """Initialize"""
@@ -86,7 +95,7 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry: ConfigEntry):
         """Return Option handler."""
-        return ConfigOptionFlowHandler()
+        return ConfigOptionFlowHandler(config_entry)
 
     @callback
     def _show_setup_form(self, step_id=None, user_input=None, schema=None, errors=None):
@@ -177,27 +186,51 @@ class ConfigFlow(ConfigFlow, domain=DOMAIN):
                     CONF_INCLUDE_POLLUTION) is not None else False
                 self.option[CONF_INCLUDE_POLLEN] = True if user_input.get(
                     CONF_INCLUDE_POLLEN) is not None else False
-                return self.async_create_entry(
-                    title=f"{TITLE} - {self.data.get(CONF_CITY)}", data=self.data, options=self.option
-                )
+                return await self.async_step_forecast_sensor_type()
         return self._show_setup_form("sensors_type", user_input, INCLUDED_SENSOR_SCHEMA, errors)
+
+    async def async_step_forecast_sensor_type(self, user_input=None):
+        """Handle forecat sensor step"""
+        errors = {}
+        if user_input is not None:
+            self.option[CONF_INCLUDE_POLLUTION_FORECAST] = True if user_input.get(
+                CONF_INCLUDE_POLLUTION_FORECAST) is not None else False
+            self.option[CONF_INCLUDE_POLLEN_FORECAST] = True if user_input.get(
+                CONF_INCLUDE_POLLEN_FORECAST) is not None else False
+            return self.async_create_entry(
+                title=f"{TITLE} - {self.data.get(CONF_CITY)}", data=self.data, options=self.option
+            )
+        return self._show_setup_form("forecast_sensor_type", user_input, INCLUDED_FORECAST_SENSOR_SCHEMA, errors)
 
 
 class ConfigOptionFlowHandler(OptionsFlow):
     """Handle a update flow for AirAtmo."""
 
+    def __init__(self, config_entry):
+        """Initialize"""
+        self.newOption = {}
+
     async def async_step_init(self, user_input) -> ConfigFlowResult:
         errors = {}
-        newOpt = {}
         if user_input is not None:
             if not (user_input.get(CONF_INCLUDE_POLLUTION) or user_input.get(CONF_INCLUDE_POLLEN)):
                 errors["base"] = "need_one_option"
             else:
-                newOpt[CONF_INCLUDE_POLLUTION] = user_input.get(
+                incluedSensor[CONF_INCLUDE_POLLUTION] = user_input.get(
                     CONF_INCLUDE_POLLUTION)
-                newOpt[CONF_INCLUDE_POLLEN] = user_input.get(
+                incluedSensor[CONF_INCLUDE_POLLEN] = user_input.get(
                     CONF_INCLUDE_POLLEN)
-
-                return self.async_create_entry(title=self.config_entry.title, data=newOpt)
+                return await self.async_step_forecast()
 
         return self.async_show_form(step_id="init", data_schema=self.add_suggested_values_to_schema(INCLUDED_SENSOR_SCHEMA, self.config_entry.options), errors={})
+
+    async def async_step_forecast(self, user_input=None) -> ConfigFlowResult:
+        errors = {}
+        if user_input is not None:
+            self.newOption[CONF_INCLUDE_POLLUTION_FORECAST] = True if user_input.get(
+                CONF_INCLUDE_POLLUTION_FORECAST) is not None else False
+            self.newOption[CONF_INCLUDE_POLLEN_FORECAST] = True if user_input.get(
+                CONF_INCLUDE_POLLEN_FORECAST) is not None else False
+            return self.async_create_entry(title=self.config_entry.title, data=self.newOption)
+
+        return self.async_show_form(step_id="forecast", data_schema=self.add_suggested_values_to_schema(INCLUDED_FORECAST_SENSOR_SCHEMA, self.config_entry.options), errors={})
