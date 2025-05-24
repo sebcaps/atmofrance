@@ -15,6 +15,7 @@ NAME = "Atmo France"
 PLATFORMS: list[Platform] = [Platform.SENSOR]
 CLIENT_TIMEOUT = 10
 BASE_URL = "https://admindata.atmo-france.org"
+# BASE_URL = "https://edd3f143-d01b-4a0c-9399-566e3e0f8f82.mock.pstmn.io"
 AUTH_URL = f"{BASE_URL}/api/login"
 DATA_URL = f"{BASE_URL}/api/data"  # 112 : pollution ; 122 : pollen
 
