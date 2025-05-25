@@ -13,6 +13,14 @@ CLIENT_TIMEOUT = ClientTimeout(total=DEFAULT_TIMEOUT)
 _LOGGER = logging.getLogger(__name__)
 
 
+class TooManyRequestsError(Exception):
+    """Exception to handle too many requests error."""
+
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+        self.message = message
+
+
 class AtmoFranceDataApi:
     """Api to get AirAtmo data"""
 
@@ -47,15 +55,26 @@ class AtmoFranceDataApi:
             resp = await request.json()
             self._token = resp["token"]
             _LOGGER.debug("got response %s ", resp)
+        elif request.status == 429:
+            raise TooManyRequestsError(
+                f"Too many requests response from the server, please retry in {request.headers.get("Retry-After")} seconds")
         else:
-            _LOGGER.error(
-                "Failed to get authent token, with status %s ", request.status
+            raise ConnectionRefusedError(
+                f"Failed to get authent token, with error status : {request.status}"
             )
-            raise ValueError
 
     async def get_data(self, insee_code, type: URL_CODE) -> dict:
         """Get Data from AtmoFrance API"""
-        await self.async_get_token()  # Always called to be sure to have a valid token
+        try:
+            await self.async_get_token()  # Always called to be sure to have a valid token
+        except ConnectionRefusedError as err:
+            _LOGGER.error(
+                "Failed to get token with status error %s ", err),
+            return None
+        except TooManyRequestsError as err:
+            _LOGGER.error(
+                "Too many request error from the server. Try again in %s ", err),
+            return None
         headers = {"Authorization": f"Bearer {self._token}"}
         today = datetime.now(
             ZoneInfo(self._hass.config.time_zone)).strftime("%Y-%m-%d")

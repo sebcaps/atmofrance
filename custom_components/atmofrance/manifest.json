@@ -9,5 +9,5 @@
     "integration_type": "device",
     "iot_class": "cloud_polling",
     "issue_tracker": "https://github.com/sebcaps/atmofrance/issues",
-    "version": "2.1.0"
+    "version": "2.1.2"
 }

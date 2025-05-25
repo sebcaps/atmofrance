@@ -67,6 +67,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     if entry.entry_id not in hass.data[DOMAIN]:
         hass.data[DOMAIN][entry.entry_id] = {}
+        source = None
         if entry.options[CONF_INCLUDE_POLLUTION] or entry.options[CONF_INCLUDE_POLLUTION_FORECAST]:
             pollutionapi = AtmoFranceDataApi(entry.data, hass=hass)
             # Get pollution data for city
@@ -90,9 +91,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                         entry.data[CONF_INSEE_CODE],
                         entry.data[CONF_INSEE_EPCI],
                     )
-            hass.data[DOMAIN][entry.entry_id][
-                CONF_POLLUTION_COORDINATOR
-            ] = AtmoFrancePollutionApiCoordinator(hass=hass, config=entry, api=pollutionapi, source=source)
+            if not (source is None):
+                hass.data[DOMAIN][entry.entry_id][
+                    CONF_POLLUTION_COORDINATOR
+                ] = AtmoFrancePollutionApiCoordinator(hass=hass, config=entry, api=pollutionapi, source=source)
 
         if entry.options[CONF_INCLUDE_POLLEN] or entry.options[CONF_INCLUDE_POLLEN_FORECAST]:
             _LOGGER.info("Getting Pollen data")
@@ -117,9 +119,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                         entry.data[CONF_INSEE_CODE],
                         entry.data[CONF_INSEE_EPCI],
                     )
-            hass.data[DOMAIN][entry.entry_id][
-                CONF_POLLEN_COORDINATOR
-            ] = AtmoFrancePollenApiCoordinator(hass=hass, config=entry, api=pollenapi, source=source)
+            if not (source is None):
+                hass.data[DOMAIN][entry.entry_id][
+                    CONF_POLLEN_COORDINATOR
+                ] = AtmoFrancePollenApiCoordinator(hass=hass, config=entry, api=pollenapi, source=source)
 
     await hass.config_entries.async_forward_entry_setups(entry, [Platform.SENSOR])
 
