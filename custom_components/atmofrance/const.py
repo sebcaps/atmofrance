@@ -48,7 +48,7 @@ POLLUTION_LEVEL = {
     4: "Mauvais",
     5: "Trés Mauvais",
     6: "Extrêmement mauvais",
-    8: "Évènement",
+    7: "Évènement",
 }
 
 POLLEN_LEVEL = {
@@ -68,8 +68,8 @@ LEVEL_COLOR = {
     3: "#f0e641",
     4: "#ff5050",
     5: "#960032",
-    6: "#7d2181",
-    8: "#888",
+    6: "#872181",
+    7: "#888",
 }
 
 REFRESH_INTERVALL = 60
