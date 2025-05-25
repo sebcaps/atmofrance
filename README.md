@@ -95,7 +95,7 @@ Enfin, il faut choisir d'ajouter ou non des prévisions pour les polluants et/ou
 ### Données
 
 #### Pollution
-Les informations présentées sont les niveaux de pollution sur une échelle de 1 (Bon) à 6 (Extrêmement Mauvais), avec 0 (Indisponible) et 8 (événement).
+Les informations présentées sont les niveaux de pollution sur une échelle de 1 (Bon) à 6 (Extrêmement Mauvais), avec 0 (Indisponible) et 7 (événement).
 
 Les attributs suivants sont disponible:
 - La date et heure (UTC) de la mise à jour des données par AtmoFrance. **Les données sont mises à jour une fois par jour par Atmo France.**
