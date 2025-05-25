@@ -56,16 +56,9 @@ class AtmoFranceDataApi:
             self._token = resp["token"]
             _LOGGER.debug("got response %s ", resp)
         elif request.status == 429:
-            # _LOGGER.war(
-            #     "Too many requests response from the server, please retry in %s seconds",
-            #     request.headers.get("Retry-After"),
-            # )
             raise TooManyRequestsError(
                 f"Too many requests response from the server, please retry in {request.headers.get("Retry-After")} seconds")
         else:
-            # _LOGGER.error(
-            #     "Failed to get authent token, with status %s ", request.status
-            # )
             raise ConnectionRefusedError(
                 f"Failed to get authent token, with error status : {request.status}"
             )
