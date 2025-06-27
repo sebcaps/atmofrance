@@ -1,6 +1,6 @@
 # Atmo France pour Home Assistant
-![downloads](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.atmofrance.total)
 
+![downloads](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.atmofrance.total)
 
 Composant pour exposer les niveaux de pollution atmosphérique et alerte pollen prévus pour le jour même et le lendemain.
 
@@ -8,7 +8,9 @@ Données fournies par Atmo France et les agences régionales.
 Voir https://www.atmo-france.org/ pour l'accès web.
 
 L'intégration expose les données d'Atmo France pour une commune donnée.
+
 Les données exposées pour la pollution de l'air sont :
+
 - Niveau de pollution Dioxyde d'Azote (NO<sub>2</sub>)
 - Niveau de pollution Ozone (O<sub>3</sub>)
 - Niveau de pollution Dioxyde de Soufre (SO<sub>2</sub>)
@@ -16,30 +18,30 @@ Les données exposées pour la pollution de l'air sont :
 - Niveau de pollution Particules fines <10 µm (Pm10)
 - Niveau global de qualité de l'air
 
-Les données exposées pour les pollens  sont :
+Les données exposées pour les pollens sont :
+
 - Concentration en Ambroisie (µg/m<sup>3</sup>)
 - Concentration en Armoise (µg/m<sup>3</sup>)
 - Concentration en Aulne (µg/m<sup>3</sup>)
 - Concentration en Bouleau (µg/m<sup>3</sup>)
-- Concentration en Graminé (µg/m<sup>3</sup>)
+- Concentration en Graminées (µg/m<sup>3</sup>)
 - Concentration en Olivier (µg/m<sup>3</sup>)
 - Niveau Ambroisie
 - Niveau Armoise
 - Niveau Aulne
 - Niveau Bouleau
-- Niveau Graminé
+- Niveau Graminées
 - Niveau Olivier
 - Qualité globale Pollen
 
-Sont disponibles , les données pour le jour courant (J) ainsi que les prévisions pour le jour suivant (J+1).
+Sont disponibles les données pour le jour courant (J) ainsi que les prévisions pour le jour suivant (J+1).
 
 > [!IMPORTANT]
-> Prévisions disponible à J+1. Sous réserves de présence effective des données.
+> Prévisions disponibles à J+1, sous réserve de la présence effective des données.
 >
-> Les données étant rafraichies à 12h00, entre 00h00 et 12H00 du jour J, les données à J+2 ne sont pas disponibles.
+> Les données étant rafraîchies à 12h00, entre 00h00 et 12h00 du jour J, les données à J+2 ne sont pas disponibles.
 >
-> C'est pour cette raison que les prévisions à J+2 ne sont pas implémentés.
-
+> C'est pour cette raison que les prévisions à J+2 ne sont pas implémentées.
 
 ## Installation
 
@@ -56,7 +58,7 @@ Utilisez [HACS](https://hacs.xyz/).
 
 ### Configuration dans Home Assistant
 
-La méthode de configuration consiste à utiliser l'interface utilisateur.
+La configuration s'effectue via l'interface utilisateur.
 
 Il faut tout d'abord saisir ses [identifiants d'accès](#obtenir-un-accès-pour-les-api-atmo-france) à l'API.
 
@@ -65,93 +67,103 @@ Il faut tout d'abord saisir ses [identifiants d'accès](#obtenir-un-accès-pour-
 Puis sélectionner le code postal de la commune dont on souhaite obtenir les données.
 
 ![image info](/img/location.png)
->**Note :**
->L'API se base sur le code INSEE. La récupération du code INSEE se fait via l'intégration, mais il peut y avoir plusieurs communes (donc plusieurs codes INSEE) pour un même code postal. Dans ce cas, une étape supplémentaire demande de préciser la commune (sélectionnable dans une liste) pour ne récupérer qu'un code INSEE.
+
+> **Note :**
+> L'API se base sur le code INSEE. La récupération du code INSEE se fait via l'intégration, mais il peut y avoir plusieurs communes (donc plusieurs codes INSEE) pour un même code postal. Dans ce cas, une étape supplémentaire demande de préciser la commune (sélectionnable dans une liste) pour ne récupérer qu'un code INSEE.
 
 ![image info](/img/multiloc.png)
 
->**Note:**
-> Pour certaines région (Occitanie, Bretagne), les données sont disponibles au niveau de l'[EPCI](https://www.insee.fr/fr/metadonnees/definition/c1160#:~:text=Les%20%C3%A9tablissements%20publics%20de%20coop%C3%A9ration,%C3%A0%20celles%20de%20collectivit%C3%A9s%20locales) et non de la commune.
-> L'intégration le detecte automatiquement et affiche les donnée de l'EPCI à laquelle la commune appartient.
+> **Note :**
+> Pour certaines régions (Occitanie, Bretagne), les données sont disponibles au niveau de l'[EPCI](https://www.insee.fr/fr/metadonnees/definition/c1160#:~:text=Les%20%C3%A9tablissements%20publics%20de%20coop%C3%A9ration,%C3%A0%20celles%20de%20collectivit%C3%A9s%20locales) et non de la commune.
+> L'intégration le détecte automatiquement et affiche les données de l'EPCI à laquelle la commune appartient.
 >
 > La configuration se fait toujours par le code postal de la commune, mais l'extraction des données au niveau EPCI.
 
-Ensuite, il faut sélectionner le type d'informations souhaité les indicateurs de pollution et/ou les données concernant les pollens.
+Ensuite, il faut sélectionner le type d'informations souhaité : les indicateurs de pollution et/ou les données concernant les pollens.
 
 ![image info](/img/typeindicateur.png)
-
 
 Enfin, il faut choisir d'ajouter ou non des prévisions pour les polluants et/ou les données pollens.
 
 ![image info](/img/forecast_initial.png)
 
->**Note :**
->Lors de la mise à jour du composant depuis une version précédente:
-> - les donnes pollens ne sont pas actuves. Pour rajouter les données pollen, passer par le menu *Configuer* de l'entité et activer les indicateurs pollens.
-> - les données prévisions ne sont pas actives. Pour rajouter les prévisions, passer par le menu *Configuer* de l'entité et activer les indicateurs de prévision.
+> **Note :**
+> Lors de la mise à jour du composant depuis une version précédente :
+>
+> - les données pollens ne sont pas actives. Pour rajouter les données pollens, passer par le menu _Configurer_ de l'entité et activer les indicateurs pollens.
+> - les données prévisions ne sont pas actives. Pour rajouter les prévisions, passer par le menu _Configurer_ de l'entité et activer les indicateurs de prévision.
 
 ![image info](/img/configuration.png)
 
 ### Données
 
 #### Pollution
-Les informations présentées sont les niveaux de pollution sur une échelle de 1 (Bon) à 6 (Extrêmement Mauvais), avec 0 (Indisponible) et 7 (événement).
 
-Les attributs suivants sont disponible:
-- La date et heure (UTC) de la mise à jour des données par AtmoFrance. **Les données sont mises à jour une fois par jour par Atmo France.**
+Les informations présentées sont les niveaux de pollution sur une échelle de 1 (Bon) à 6 (Extrêmement Mauvais), avec 0 (Indisponible) et 7 (Événement).
+
+Les attributs suivants sont disponibles :
+
+- La date et heure (UTC) de la mise à jour des données par Atmo France. **Les données sont mises à jour une fois par jour par Atmo France.**
 - Le libellé du niveau
-- La couleur associée au niveau de pollution (couleurs 'officielles' d'atmo france, au format hexadécimal)
+- La couleur associée au niveau de pollution (couleurs 'officielles' d'Atmo France, au format hexadécimal)
 - Le type de zone (commune ou EPCI)
 - Le nom de la zone
 
 ![image info](/img/attributs.png)
 
 #### Pollens
-Les informations présentées sont les niveaux d'alerte pollen sur une échelle de 1 (Trés Faible) à 6 (Extrêmement Elevé), avec 0 (Indisponible) et la concentration des pollens en µg/m<sup>3</sup>.
 
-Les attributs suivants sont disponible:
-- La date et heure (UTC) de la mise à jour des données par AtmoFrance. **Les données sont mises à jour une fois par jour par Atmo France vers 13h00**
+Les informations présentées sont les niveaux d'alerte pollen sur une échelle de 1 (Très Faible) à 6 (Extrêmement Élevé), avec 0 (Indisponible) et la concentration des pollens en µg/m<sup>3</sup>.
+
+Les attributs suivants sont disponibles :
+
+- La date et heure (UTC) de la mise à jour des données par Atmo France. **Les données sont mises à jour une fois par jour par Atmo France vers 13h00**
 - Le libellé du niveau (**uniquement pour le niveau**)
-- La couleur associée au niveau de pollution (couleurs 'officielles' d'atmo france, au format hexadécimal) (**uniquement pour le niveau**)
+- La couleur associée au niveau de pollution (couleurs 'officielles' d'Atmo France, au format hexadécimal) (**uniquement pour le niveau**)
 - Le type de zone (commune ou EPCI)
 - Le nom de la zone
 
-
 ![image info](/img/attributsPollens.png)
-### Suggestion d'affichage
+
+## Suggestion d'affichage
+
+### Decluttering Card
 
 #### Pollution
 
 ![Dashboard](img/dashboard.png)
-### Pollen
+
+#### Pollen
 
 ![alt text](img/dashboard2.png)
 
-:warning: **Prérequis** Cet affichage se base sur les composants:
- - [custom-button-card](https://github.com/custom-cards)
- - [decluttering-card](https://github.com/custom-cards/decluttering-card)
+:warning: **Prérequis** Cet affichage se base sur les composants :
+
+- [custom-button-card](https://github.com/custom-cards)
+- [decluttering-card](https://github.com/custom-cards/decluttering-card)
 
 Se référer à la doc de chacun des composants pour les détails.
 
+Configuration _modèle decluttering_
 
-Configuration *modèle decluttering*
-```  yaml
+```yaml
 decluttering_templates:
-    atmofrance:
-        card:
-        type: custom:button-card
-        entity: '[[sensor]]'
-        name: |
-            [[[
-            return entity.attributes.friendly_name +' : ' + entity.attributes.Libellé
-            ]]]
-        styles:
-            icon:
-            - color: '[[[return entity.attributes.Couleur]]]'
+  atmofrance:
+    card:
+    type: custom:button-card
+    entity: "[[sensor]]"
+    name: |
+      [[[
+      return entity.attributes.friendly_name +' : ' + entity.attributes.Libellé
+      ]]]
+    styles:
+      icon:
+        - color: "[[[return entity.attributes.Couleur]]]"
 ```
 
 Configuration du dashboard principal :
-``` yaml
+
+```yaml
 type: vertical-stack
 cards:
   - type: custom:decluttering-card
@@ -180,4 +192,174 @@ cards:
         template: atmofrance
         variables:
           - sensor: sensor.dioxyde_de_soufre_paris
+```
+
+### Mushroom badge
+
+Une autre façon d'afficher les données sous forme de badge.
+
+![Badge](img/badge.png)
+
+:warning: **Prérequis** Cet affichage se base sur le composant :
+
+- [Mushroom](https://github.com/piitaya/lovelace-mushroom)
+
+Configuration du badge :
+
+Cet exemple peut servir de point de départ : vous pouvez personnaliser l'affichage du titre et du contenu selon vos préférences. Dans cet exemple, le titre affiche les principaux polluants et le contenu indique l'indice de qualité de l'air. N'oubliez pas d'adapter les entités à votre configuration.
+
+<details>
+  <summary>Afficher le code YAML</summary>
+
+```yaml
+type: custom:mushroom-template-badge
+entity: sensor.qualite_globale_decines_charpieu
+color: >-
+  {% set qualite_air = states('sensor.qualite_globale_decines_charpieu') |
+  int(0)
+    %}
+
+  {% if qualite_air == 0 %}
+    lightgrey
+  {% elif qualite_air == 1 %}
+    cyan
+  {% elif qualite_air == 2 %}
+    mediumseagreen
+  {% elif qualite_air == 3 %}
+    yellow
+  {% elif qualite_air == 4 %}
+    orange
+  {% elif qualite_air == 5 %}
+    crimson
+  {% elif qualite_air == 6 %}
+    purple
+  {% else %}
+    grey
+  {% endif %}
+tap_action:
+  action: more-info
+icon: mdi:molecule
+content: >-
+  {% set qualite_air = states('sensor.qualite_globale_decines_charpieu') |
+  int(0) %}
+
+  {% if qualite_air == 0 %}
+    {% set libelle = "Indisponible" %}
+  {% elif qualite_air == 1 %}
+    {% set libelle = "Bon" %}
+  {% elif qualite_air == 2 %}
+    {% set libelle = "Moyen" %}
+  {% elif qualite_air == 3 %}
+    {% set libelle = "Dégradé" %}
+  {% elif qualite_air == 4 %}
+    {% set libelle = "Mauvais" %}
+  {% elif qualite_air == 5 %}
+    {% set libelle = "Très mauvais" %}
+  {% elif qualite_air == 6 %}
+    {% set libelle = "Extrêmement mauvais" %}
+  {% else %}
+    {% set libelle = "Inconnu" %}
+  {% endif %}
+
+  {{ libelle }}
+label: >-
+  {% set ozone = states('sensor.ozone_decines_charpieu') | float(0) %} {% set
+  pm10 = states('sensor.pm10_decines_charpieu') | float(0) %} {% set so2 =
+  states('sensor.dioxyde_de_soufre_decines_charpieu') | float(0) %} {% set pm25
+  = states('sensor.pm25_decines_charpieu') | float(0) %} {% set no2 =
+  states('sensor.dioxyde_d_azote_decines_charpieu') | float(0) %}
+
+  {% set max_value = [ozone, pm10, so2, pm25, no2] | max %}
+
+  {% set max_labels = [] %}
+
+  {% if ozone == max_value %}{% set max_labels = max_labels + ['O3'] %}{% endif
+  %} {% if pm10 == max_value %}{% set max_labels = max_labels + ['PM10'] %}{%
+  endif %} {% if so2 == max_value %}{% set max_labels = max_labels + ['SO₂']
+  %}{% endif %} {% if pm25 == max_value %}{% set max_labels = max_labels +
+  ['PM2.5'] %}{% endif %} {% if no2 == max_value %}{% set max_labels =
+  max_labels + ['NO₂'] %}{% endif %}
+
+  {{ max_labels | join(', ') }}
+```
+
+</details>
+
+Le même principe s'applique pour les pollens : le titre affiche la liste des principaux pollens et le contenu indique le niveau de risque pollinique. Modifiez le code YAML en fonction de vos besoins.
+
+<details>
+  <summary>Afficher le code YAML</summary>
+
+```yaml
+type: custom:mushroom-template-badge
+entity: sensor.qualite_globale_pollen_decines_charpieu
+color: >-
+  {% set pollens = states('sensor.qualite_globale_pollen_decines_charpieu') |
+  int(O) %}
+
+
+  {% if pollens == 0 %}
+    lightgrey
+  {% elif pollens == 1 %}
+    green
+  {% elif pollens == 2 %}
+    lime
+  {% elif pollens == 3 %}
+    yellow
+  {% elif pollens == 4 %}
+    orange
+  {% elif pollens == 5 %}
+    red
+  {% else %} 
+    purple
+  {% endif %}
+tap_action:
+  action: more-info
+icon: mdi:flower-pollen-outline
+content: >-
+  {% set qualite_air = states('sensor.qualite_globale_pollen_decines_charpieu')
+  | int(0) %}
+
+  {% if qualite_air == 0 %}
+    {% set libelle = "Indisponible" %}
+  {% elif qualite_air == 1 %}
+    {% set libelle = "Très faible" %}
+  {% elif qualite_air == 2 %}
+    {% set libelle = "Faible" %}
+  {% elif qualite_air == 3 %}
+    {% set libelle = "Modéré" %}
+  {% elif qualite_air == 4 %}
+    {% set libelle = "Élevé" %}
+  {% elif qualite_air == 5 %}
+    {% set libelle = "Très élevé" %}
+  {% elif qualite_air == 6 %}
+    {% set libelle = "Extrêmement élevé" %}
+  {% else %}
+    {% set libelle = "Inconnu" %}
+  {% endif %}
+
+  {{ libelle }}
+label: >-
+  {% set ambroisie = states('sensor.niveau_ambroisie_decines_charpieu') |
+  float(0) %} {% set armoise = states('sensor.niveau_armoise_decines_charpieu')
+  | float(0) %} {% set aulne = states('sensor.niveau_aulne_decines_charpieu') |
+  float(0) %} {% set bouleau = states('sensor.niveau_bouleau_decines_charpieu')
+  | float(0) %} {% set gramine =
+  states('sensor.niveau_gramine_decines_charpieu') | float(0) %} {% set olivier
+  = states('sensor.niveau_olivier_decines_charpieu') | float(0) %}
+
+  {% set max_value = [ambroisie, armoise, aulne, bouleau, gramine, olivier] |
+  max %}
+
+  {% set max_labels = [] %}
+
+  {% if ambroisie == max_value %}{% set max_labels = max_labels + ['Ambroisie']
+  %}{% endif %} {% if armoise == max_value %}{% set max_labels = max_labels +
+  ['Armoise'] %}{% endif %} {% if aulne == max_value %}{% set max_labels =
+  max_labels + ['Aulne'] %}{% endif %} {% if bouleau == max_value %}{% set
+  max_labels = max_labels + ['Bouleau'] %}{% endif %} {% if gramine == max_value
+  %}{% set max_labels = max_labels + ['Graminées'] %}{% endif %} {% if olivier
+  == max_value %}{% set max_labels = max_labels + ['Olivier'] %}{% endif %}
+
+  {{ max_labels | join(', ') }}
 ```
