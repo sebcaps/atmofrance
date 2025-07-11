@@ -214,54 +214,11 @@ Cet exemple peut servir de point de départ : vous pouvez personnaliser l'affich
 ```yaml
 type: custom:mushroom-template-badge
 entity: sensor.qualite_globale_decines_charpieu
-color: >-
-  {% set qualite_air = states('sensor.qualite_globale_decines_charpieu') |
-  int(0)
-    %}
-
-  {% if qualite_air == 0 %}
-    lightgrey
-  {% elif qualite_air == 1 %}
-    cyan
-  {% elif qualite_air == 2 %}
-    mediumseagreen
-  {% elif qualite_air == 3 %}
-    yellow
-  {% elif qualite_air == 4 %}
-    orange
-  {% elif qualite_air == 5 %}
-    crimson
-  {% elif qualite_air == 6 %}
-    purple
-  {% else %}
-    grey
-  {% endif %}
+color: "{{state_attr('sensor.qualite_globale_decines_charpieu','Couleur')}}"
 tap_action:
   action: more-info
 icon: mdi:molecule
-content: >-
-  {% set qualite_air = states('sensor.qualite_globale_decines_charpieu') |
-  int(0) %}
-
-  {% if qualite_air == 0 %}
-    {% set libelle = "Indisponible" %}
-  {% elif qualite_air == 1 %}
-    {% set libelle = "Bon" %}
-  {% elif qualite_air == 2 %}
-    {% set libelle = "Moyen" %}
-  {% elif qualite_air == 3 %}
-    {% set libelle = "Dégradé" %}
-  {% elif qualite_air == 4 %}
-    {% set libelle = "Mauvais" %}
-  {% elif qualite_air == 5 %}
-    {% set libelle = "Très mauvais" %}
-  {% elif qualite_air == 6 %}
-    {% set libelle = "Extrêmement mauvais" %}
-  {% else %}
-    {% set libelle = "Inconnu" %}
-  {% endif %}
-
-  {{ libelle }}
+content: "{{state_attr('sensor.qualite_globale_decines_charpieu','Libellé')}}"
 label: >-
   {% set ozone = states('sensor.ozone_decines_charpieu') | float(0) %} {% set
   pm10 = states('sensor.pm10_decines_charpieu') | float(0) %} {% set so2 =
@@ -293,52 +250,11 @@ Le même principe s'applique pour les pollens : le titre affiche la liste des pr
 ```yaml
 type: custom:mushroom-template-badge
 entity: sensor.qualite_globale_pollen_decines_charpieu
-color: >-
-  {% set pollens = states('sensor.qualite_globale_pollen_decines_charpieu') |
-  int(O) %}
-
-
-  {% if pollens == 0 %}
-    lightgrey
-  {% elif pollens == 1 %}
-    green
-  {% elif pollens == 2 %}
-    lime
-  {% elif pollens == 3 %}
-    yellow
-  {% elif pollens == 4 %}
-    orange
-  {% elif pollens == 5 %}
-    red
-  {% else %} 
-    purple
-  {% endif %}
+color: "{{state_attr('sensor.qualite_globale_pollen_decines_charpieu','Couleur')}}"
 tap_action:
   action: more-info
 icon: mdi:flower-pollen-outline
-content: >-
-  {% set qualite_air = states('sensor.qualite_globale_pollen_decines_charpieu')
-  | int(0) %}
-
-  {% if qualite_air == 0 %}
-    {% set libelle = "Indisponible" %}
-  {% elif qualite_air == 1 %}
-    {% set libelle = "Très faible" %}
-  {% elif qualite_air == 2 %}
-    {% set libelle = "Faible" %}
-  {% elif qualite_air == 3 %}
-    {% set libelle = "Modéré" %}
-  {% elif qualite_air == 4 %}
-    {% set libelle = "Élevé" %}
-  {% elif qualite_air == 5 %}
-    {% set libelle = "Très élevé" %}
-  {% elif qualite_air == 6 %}
-    {% set libelle = "Extrêmement élevé" %}
-  {% else %}
-    {% set libelle = "Inconnu" %}
-  {% endif %}
-
-  {{ libelle }}
+content: "{{state_attr('sensor.qualite_globale_pollen_decines_charpieu','Libellé')}}"
 label: >-
   {% set ambroisie = states('sensor.niveau_ambroisie_decines_charpieu') |
   float(0) %} {% set armoise = states('sensor.niveau_armoise_decines_charpieu')
