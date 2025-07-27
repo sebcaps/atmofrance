@@ -279,3 +279,128 @@ label: >-
 
   {{ max_labels | join(', ') }}
 ```
+</details>
+
+### Mushroom cards
+
+![Cards](img/dashboard3.png)
+
+<details>
+  <summary>Afficher le code YAML</summary>
+
+```yaml
+type: grid
+cards:
+  - type: heading
+    heading_style: title
+    heading: Air Quality
+    icon: mdi:air-purifier
+  - type: custom:mushroom-template-card
+    entity: sensor.qualite_globale_gap
+    primary: >
+      {% set v = states(entity) | int(0) %}   {% if v == 0 %} Unknown   {% elif
+      v == 1 %} Good   {% elif v <= 3 %} OK   {% elif v <= 4 %} Bad {% elif v <=
+      5 %} Very Bad {% else %} Terrible   {% endif %}
+    secondary: Air Quality
+    icon: mdi:weather-windy
+    icon_color: >
+      {% set v = states(entity) | int(0) %} {% if v == 0 %} grey {% elif v <= 2
+      %} green {% elif v <= 3 %} yellow {% elif v <= 4 %} orange {% else %} red
+      {% endif %}
+    tap_action:
+      action: more-info
+  - type: custom:mushroom-template-card
+    entity: sensor.qualite_globale_pollen_gap
+    primary: >
+      {% set v = states(entity) | int(0) %}   {% if v == 0 %} Unknown   {% elif
+      v == 1 %} Good   {% elif v <= 3 %} OK   {% elif v <= 4 %} Bad {% elif v <=
+      5 %} Very Bad {% else %} Terrible   {% endif %}
+    secondary: Pollens
+    icon: mdi:air-filter
+    icon_color: >
+      {% set v = states(entity) | int(0) %} {% if v == 0 %} grey {% elif v <= 2
+      %} green {% elif v <= 3 %} yellow {% elif v <= 4 %} orange {% else %} red
+      {% endif %}
+    tap_action:
+      action: more-info
+  - type: heading
+    icon: mdi:grain
+    heading: Particles
+    heading_style: subtitle
+  - type: custom:mushroom-template-card
+    entity: sensor.dioxyde_de_soufre_gap
+    primary: >
+      {% set v = states(entity) | int(0) %}   {% if v == 0 %} Unknown   {% elif
+      v == 1 %} Good   {% elif v <= 3 %} OK   {% elif v <= 4 %} Bad {% elif v <=
+      5 %} Very Bad {% else %} Terrible   {% endif %}
+    secondary: Sulfur Dioxide
+    icon: mdi:chemical-weapon
+    icon_color: >
+      {% set v = states(entity) | int(0) %} {% if v == 0 %} grey {% elif v <= 2
+      %} green {% elif v <= 3 %} yellow {% elif v <= 4 %} orange {% else %} red
+      {% endif %}
+    tap_action:
+      action: more-info
+  - type: custom:mushroom-template-card
+    entity: sensor.dioxyde_d_azote_gap
+    primary: >
+      {% set v = states(entity) | int(0) %}   {% if v == 0 %} Unknown   {% elif
+      v == 1 %} Good   {% elif v <= 3 %} OK   {% elif v <= 4 %} Bad {% elif v <=
+      5 %} Very Bad {% else %} Terrible   {% endif %}
+    secondary: Nitrogen Dioxide
+    icon: mdi:smog
+    icon_color: >
+      {% set v = states(entity) | int(0) %} {% if v == 0 %} grey {% elif v <= 2
+      %} green {% elif v <= 3 %} yellow {% elif v <= 4 %} orange {% else %} red
+      {% endif %}
+    tap_action:
+      action: more-info
+  - type: custom:mushroom-template-card
+    entity: sensor.ozone_gap
+    primary: >
+      {% set v = states(entity) | int(0) %}   {% if v == 0 %} Unknown   {% elif
+      v == 1 %} Good   {% elif v <= 3 %} OK   {% elif v <= 4 %} Bad {% elif v <=
+      5 %} Very Bad {% else %} Terrible   {% endif %}
+    secondary: Ozone
+    icon: mdi:weather-sunny-alert
+    icon_color: >
+      {% set v = states(entity) | int(0) %} {% if v == 0 %} grey {% elif v <= 2
+      %} green {% elif v <= 3 %} yellow {% elif v <= 4 %} orange {% else %} red
+      {% endif %}
+    tap_action:
+      action: more-info
+  - type: heading
+    icon: mdi:atom
+    heading: Micro-particles
+    heading_style: subtitle
+  - type: custom:mushroom-template-card
+    entity: sensor.pm25_gap
+    primary: >
+      {% set v = states(entity) | int(0) %}   {% if v == 0 %} Unknown   {% elif
+      v == 1 %} Good   {% elif v <= 3 %} OK   {% elif v <= 4 %} Bad {% elif v <=
+      5 %} Very Bad {% else %} Terrible   {% endif %}
+    secondary: PM2.5
+    icon: mdi:blur-linear
+    icon_color: >
+      {% set v = states(entity) | int(0) %} {% if v == 0 %} grey {% elif v <= 2
+      %} green {% elif v <= 3 %} yellow {% elif v <= 4 %} orange {% else %} red
+      {% endif %}
+    tap_action:
+      action: more-info
+  - type: custom:mushroom-template-card
+    entity: sensor.pm10_gap
+    primary: >
+      {% set v = states(entity) | int(0) %}   {% if v == 0 %} Unknown   {% elif
+      v == 1 %} Good   {% elif v <= 3 %} OK   {% elif v <= 4 %} Bad {% elif v <=
+      5 %} Very Bad {% else %} Terrible   {% endif %}
+    secondary: PM10
+    icon: mdi:blur
+    icon_color: >
+      {% set v = states(entity) | int(0) %} {% if v == 0 %} grey {% elif v <= 2
+      %} green {% elif v <= 3 %} yellow {% elif v <= 4 %} orange {% else %} red
+      {% endif %}
+    tap_action:
+      action: more-info
+```
+
+</details>
