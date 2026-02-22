@@ -127,6 +127,13 @@ Les attributs suivants sont disponibles :
 
 ## Suggestion d'affichage
 
+### Carte PollenPrognos
+Une carte lovelace supportant cette intégration est disponible et permet l'affichage des données avec une configuration minimale.
+Pour l'installation et la configuration, voir [PollenPrognos](https://github.com/krissen/pollenprognos-card).
+
+> [!IMPORTANT]
+> Il s'agit d'un projet distinct qui s'occupe de l'affichage des données et qui supporte plusieurs intégration de qualité de l'air.
+
 ### Decluttering Card
 
 #### Pollution
