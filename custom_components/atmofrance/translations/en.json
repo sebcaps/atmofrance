@@ -41,7 +41,7 @@
                     "include_pollen_forecast": "Pollen forecast",
                     "include_pollution_forecast": "Pollution forecast"
                 },
-                "title": "Forecast ndicator type selection",
+                "title": "Forecast indicator type selection",
                 "description": "Select sensor type"
             }
         }
