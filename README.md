@@ -134,6 +134,16 @@ Pour l'installation et la configuration, voir [PollenPrognos](https://github.com
 > [!IMPORTANT]
 > Il s'agit d'un projet distinct qui s'occupe de l'affichage des données et qui supporte plusieurs intégration de qualité de l'air.
 
+### Carte AtmoFrance
+Une carte lovelace dédiée à cette intégration, proposant la découverte automatique des capteurs. Elle offre une vue configurable via l'UI ou en yaml et propose des traductions en anglais et francais.
+
+Pour l'installation et la configuration, voir [atmofrance-card](https://github.com/sylvertom/atmofrance-card).
+
+![AtmoFrance Card](https://raw.githubusercontent.com/sylvertom/atmofrance-card/main/screenshot.png)
+
+> [!IMPORTANT]
+> Il s'agit d'un projet distinct qui s'occupe de l'affichage des données de cette intégration.
+
 ### Decluttering Card
 
 #### Pollution
