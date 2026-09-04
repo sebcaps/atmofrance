@@ -177,6 +177,29 @@ class AtmoFranceApiCoordinator(DataUpdateCoordinator):
             entry, [Platform.SENSOR]
         )
 
+    async def _fetch(self, url_code: URL_CODE):
+        """Récupère un indicateur et traduit l'échec dans ce qu'attend HA.
+
+        Une requête qui échoue devient UpdateFailed : les entités passent en
+        indisponible, ce qui est le signal correct.
+
+        Une requête qui aboutit et ne renvoie aucune ligne n'en est pas une.
+        Atmo France purge son jeu de données pendant la nuit et le republie
+        vers midi ; entre les deux l'API répond parfaitement et n'a rien à
+        donner. Traiter ça comme un échec produit une erreur quotidienne dans
+        le journal et rend toutes les entités indisponibles jusqu'à midi. La
+        mise à jour réussit donc avec une charge utile vide, et chaque capteur
+        rapporte sa propre valeur comme inconnue.
+        """
+        data = await self.api.get_data(
+            self.config.data[self._source], url_code)
+        if data is None:  # la requête elle-même a échoué
+            raise UpdateFailed(
+                f'No Data from Atmo France for INSEE code {
+                    self.config.data[self._source]} and date {date.today().strftime("%Y-%m-%d")}'
+            )
+        return data
+
 
 class AtmoFrancePollutionApiCoordinator (AtmoFranceApiCoordinator):
     """A coordinator to fetch pollution data from the api only once"""
@@ -185,15 +208,7 @@ class AtmoFrancePollutionApiCoordinator (AtmoFranceApiCoordinator):
         super().__init__(hass, config, api, source,  update_method=self._update_method)
 
     async def _update_method(self):
-        data = await self.api.get_data(self.config.data[self._source], URL_CODE.POLLUTION)
-        if data is not None and len(data) > 0:
-            return True
-        else:
-            self.async_set_update_error(
-                f'No Data from Atmo France for INSEE code {
-                    self.config.data[self._source]} and date {date.today().strftime("%Y-%m-%d")}'
-            )
-        return False
+        return await self._fetch(URL_CODE.POLLUTION)
 
 
 class AtmoFrancePollenApiCoordinator (AtmoFranceApiCoordinator):
@@ -203,12 +218,4 @@ class AtmoFrancePollenApiCoordinator (AtmoFranceApiCoordinator):
         super().__init__(hass, config, api, source,  update_method=self._update_method)
 
     async def _update_method(self):
-        data = await self.api.get_data(self.config.data[self._source], URL_CODE.POLLEN)
-        if data is not None and len(data) > 0:
-            return True
-        else:
-            self.async_set_update_error(
-                f'No Data from Atmo France for INSEE code {
-                    self.config.data[self._source]} and date {date.today().strftime("%Y-%m-%d")}'
-            )
-        return False
+        return await self._fetch(URL_CODE.POLLEN)
