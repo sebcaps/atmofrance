@@ -30,8 +30,9 @@ CONC_GRAM = next(d for d in POLLEN_CONC_SENSORS if d.key == "conc_gram")
 class StubApi:
     """Renvoie ce qu'on lui a demande de renvoyer."""
 
-    def __init__(self, values):
+    def __init__(self, values, has_data=True):
         self._values = values
+        self.has_data = has_data
 
     def get_key_value(self, key, shift=0):
         return self._values.get((key, shift), "")
@@ -42,13 +43,13 @@ class StubApi:
     nom_zone = "Bordeaux"
 
 
-def make_entity(hass, entity_class, description, values, shift=0):
+def make_entity(hass, entity_class, description, values, shift=0, has_data=True):
     entry = MockConfigEntry(
         domain=DOMAIN, data=ENTRY_DATA, options=POLLUTION_ONLY, version=3)
     entry.add_to_hass(hass)
     coordinator = DataUpdateCoordinator(
         hass, _LOGGER, name="test", config_entry=entry)
-    coordinator.api = StubApi(values)
+    coordinator.api = StubApi(values, has_data)
     return entity_class(hass, entry, description, coordinator, shift)
 
 
@@ -72,6 +73,22 @@ async def test_une_concentration_garde_sa_precision(hass):
         hass, AtmoFrancePollenConcentrationEntity, CONC_GRAM,
         {("conc_gram", 0): 8.2})
     assert entity.native_value == 8.2
+
+
+# ------------------------------------------------ pas de donnees pollen ----
+async def test_un_niveau_de_pollen_sans_donnees_est_inconnu(hass):
+    entity = make_entity(
+        hass, AtmoFrancePollenLevelEntity, AMBROISIE, {}, has_data=False)
+
+    assert entity.native_value is None
+    assert entity.extra_state_attributes == {}
+
+
+async def test_une_concentration_sans_donnees_est_inconnue(hass):
+    entity = make_entity(
+        hass, AtmoFrancePollenConcentrationEntity, CONC_GRAM, {}, has_data=False)
+
+    assert entity.native_value is None
 
 
 # --------------------------------------------------------- attributs ----

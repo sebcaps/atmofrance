@@ -60,20 +60,24 @@ async def _async_resolve_source(entry: ConfigEntry, api, url_code: URL_CODE) -> 
     """Find which zone code actually returns data for the given indicator.
 
     Returns CONF_INSEE_CODE (city), CONF_INSEE_EPCI (fallback) or None when
-    neither answers. Must be called once per indicator: a city may be covered
-    for pollution but not for pollen, and vice versa.
-    """
-    databycity = await api.get_data(entry.data[CONF_INSEE_CODE], url_code)
-    if databycity is not None and len(databycity) > 0:
-        # data exist for city, use it
-        _LOGGER.info("Use City code: %s as source", entry.data[CONF_INSEE_CODE])
-        return CONF_INSEE_CODE
+    both answer with an empty result set. Must be called once per indicator: a
+    city may be covered for pollution but not for pollen, and vice versa.
 
-    # Get data for EPCI (communauté de communes)
-    databyepci = await api.get_data(entry.data[CONF_INSEE_EPCI], url_code)
-    if databyepci is not None and len(databyepci) > 0:
-        _LOGGER.info("Use EPCI code: %s as source", entry.data[CONF_INSEE_EPCI])
-        return CONF_INSEE_EPCI
+    Raises ConfigEntryNotReady on a genuine API failure (authentication,
+    network, timeout, unexpected payload), which the API reports as None. An
+    empty result set is a valid answer, not a failure.
+    """
+    # City first, then EPCI (communauté de communes)
+    for conf_key in (CONF_INSEE_CODE, CONF_INSEE_EPCI):
+        data = await api.get_data(entry.data[conf_key], url_code)
+        if data is None:
+            raise ConfigEntryNotReady(
+                f"Atmo France API error while requesting {url_code.name.lower()} "
+                f"data for {entry.data[conf_key]}"
+            )
+        if len(data) > 0:
+            _LOGGER.info("Use %s: %s as source", conf_key, entry.data[conf_key])
+            return conf_key
 
     _LOGGER.error(
         "Impossible de récupérer les données pour la ville %s ou l'EPCI %s",
@@ -117,10 +121,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 # zones are independent and must never be inherited.
                 source = await _async_resolve_source(entry, pollenapi, URL_CODE.POLLEN)
                 if source is None:
-                    raise ConfigEntryNotReady(
-                        f"No pollen data available for city {entry.data[CONF_INSEE_CODE]} "
-                        f"nor EPCI {entry.data[CONF_INSEE_EPCI]}"
+                    # Empty pollen feed (typically out of season): keep the
+                    # entry loaded so air quality still works. The pollen
+                    # sensors report "unknown" and the coordinator keeps
+                    # polling the city zone until data shows up again.
+                    _LOGGER.warning(
+                        "No pollen data available for city %s nor EPCI %s, "
+                        "pollen sensors will be unknown until data is published",
+                        entry.data[CONF_INSEE_CODE],
+                        entry.data[CONF_INSEE_EPCI],
                     )
+                    source = CONF_INSEE_CODE
                 hass.data[DOMAIN][entry.entry_id][
                     CONF_POLLEN_COORDINATOR
                 ] = AtmoFrancePollenApiCoordinator(hass=hass, config=entry, api=pollenapi, source=source)
@@ -204,11 +215,12 @@ class AtmoFrancePollenApiCoordinator (AtmoFranceApiCoordinator):
 
     async def _update_method(self):
         data = await self.api.get_data(self.config.data[self._source], URL_CODE.POLLEN)
-        if data is not None and len(data) > 0:
-            return True
-        else:
+        if data is None:
+            # Genuine API failure: flag the update as failed.
             self.async_set_update_error(
                 f'No Data from Atmo France for INSEE code {
                     self.config.data[self._source]} and date {date.today().strftime("%Y-%m-%d")}'
             )
-        return False
+            return False
+        # An empty feed is not an error: the sensors simply stay "unknown".
+        return len(data) > 0

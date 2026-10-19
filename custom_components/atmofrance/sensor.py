@@ -180,6 +180,9 @@ class AtmoFrancePollenLevelEntity(AtmoFranceEntity):
 
     @property
     def native_value(self):
+        if not self._coordinator.api.has_data:
+            # No pollen published at all (e.g. out of season): unknown, not 0
+            return None
         if self._coordinator.api.get_key_value(self.entity_description.json_key, self._shift) != '':
             # Pollen alert levels are expressed as float cast them to int.
             value = int(self._coordinator.api.get_key_value(
@@ -195,10 +198,13 @@ class AtmoFrancePollenLevelEntity(AtmoFranceEntity):
 
     @property
     def extra_state_attributes(self):
+        value = self.native_value
+        if value is None:
+            return {}
         return {
             "Date de mise à jour": self._coordinator.api.last_update,
-            "Libellé": self._level2string(self.native_value),
-            "Couleur": self._level2color(self.native_value),
+            "Libellé": self._level2string(value),
+            "Couleur": self._level2color(value),
             "Type de zone": self._coordinator.api.type_zone,
             "Nom de la zone": self._coordinator.api.nom_zone,
         }
@@ -221,6 +227,9 @@ class AtmoFrancePollenConcentrationEntity(AtmoFranceEntity):
 
     @property
     def native_value(self):
+        if not self._coordinator.api.has_data:
+            # No pollen published at all (e.g. out of season): unknown, not 0
+            return None
         # FIXME real 0 should not fall into else...
         if self._coordinator.api.get_key_value(self.entity_description.json_key, self._shift) != '':
             value = self._coordinator.api.get_key_value(

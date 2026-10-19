@@ -128,6 +128,11 @@ class AtmoFranceDataApi:
             return ""
 
     @property
+    def has_data(self) -> bool:
+        """True when the last request returned at least one feature"""
+        return self._data is not None
+
+    @property
     def source(self):
         """Get value for source of data"""
         if self._data is not None:
