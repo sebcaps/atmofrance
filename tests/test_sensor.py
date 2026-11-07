@@ -116,3 +116,37 @@ async def test_l_appareil_est_un_service_attribue_a_atmo(hass):
 
     assert entity._attr_device_info["model"] == "Atmo France API"
     assert "Atmo France" in entity._attr_attribution
+
+# ------------------------------------------------- valeur manquante ----
+@pytest.mark.parametrize(
+    ("entity_class", "description"),
+    [
+        (AtmoFrancePollutionEntity, PM10),
+        (AtmoFrancePollenLevelEntity, AMBROISIE),
+        (AtmoFrancePollenConcentrationEntity, CONC_GRAM),
+    ],
+)
+async def test_un_jour_manquant_est_un_warning(hass, caplog, entity_class, description):
+    entity = make_entity(hass, entity_class, description, {})
+
+    assert entity.native_value == 0
+    records = [r for r in caplog.records if "Force value to 0" in r.message]
+    assert records and all(r.levelno == logging.WARNING for r in records)
+
+
+@pytest.mark.parametrize(
+    ("entity_class", "description"),
+    [
+        (AtmoFrancePollutionEntity, PM10),
+        (AtmoFrancePollenLevelEntity, AMBROISIE),
+        (AtmoFrancePollenConcentrationEntity, CONC_GRAM),
+    ],
+)
+async def test_une_prevision_pas_encore_publiee_est_une_info(
+        hass, caplog, entity_class, description):
+    caplog.set_level(logging.INFO)
+    entity = make_entity(hass, entity_class, description, {}, shift=1)
+
+    assert entity.native_value == 0
+    records = [r for r in caplog.records if "Force value to 0" in r.message]
+    assert records and all(r.levelno == logging.INFO for r in records)

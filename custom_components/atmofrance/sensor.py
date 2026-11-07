@@ -144,7 +144,9 @@ class AtmoFrancePollutionEntity(AtmoFranceEntity):
                 self.entity_description.json_key, self._shift))
         else:
             value = 0
-            _LOGGER.warning(
+            # A forecast day is routinely missing until Atmo publishes it.
+            _LOGGER.log(
+                logging.INFO if self._shift > 0 else logging.WARNING,
                 "Unable to get value for %s. Force value to 0", self._attr_name
             )
         _LOGGER.debug("Value for pollution sensor %s is now %s",
@@ -186,7 +188,9 @@ class AtmoFrancePollenLevelEntity(AtmoFranceEntity):
                 self.entity_description.json_key, self._shift))
         else:
             value = 0
-            _LOGGER.warning(
+            # A forecast day is routinely missing until Atmo publishes it.
+            _LOGGER.log(
+                logging.INFO if self._shift > 0 else logging.WARNING,
                 "Unable to get value for %s. Force value to 0", self._attr_name
             )
         _LOGGER.debug("Value for pollen level sensor %s is now %s",
@@ -227,7 +231,9 @@ class AtmoFrancePollenConcentrationEntity(AtmoFranceEntity):
                 self.entity_description.json_key, self._shift)
         else:
             value = 0
-            _LOGGER.warning(
+            # A forecast day is routinely missing until Atmo publishes it.
+            _LOGGER.log(
+                logging.INFO if self._shift > 0 else logging.WARNING,
                 "Unable to get value for %s. Force value to 0", self._attr_name
             )
         _LOGGER.debug("Value for sensor %s is now %s",
