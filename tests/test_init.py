@@ -1,6 +1,7 @@
 """Tests de mise en place de l'entrée de configuration."""
 from unittest.mock import patch
 
+import aiohttp
 import pytest
 
 from homeassistant.config_entries import ConfigEntryState
@@ -38,7 +39,12 @@ class FakeApi:
 
     async def get_data(self, code, url_code):
         self.calls.append((code, url_code))
-        return self._coverage.get((code, url_code))
+        if isinstance(self._coverage, Exception):
+            raise self._coverage
+        val = self._coverage.get((code, url_code))
+        if isinstance(val, Exception):
+            raise val
+        return val
 
     def get_key_value(self, key, shift=0):
         return 2
@@ -169,6 +175,29 @@ async def test_la_nouvelle_tentative_aboutit_quand_l_api_repond(hass):
         await hass.async_block_till_done()
 
     assert entry.state is ConfigEntryState.LOADED
+
+
+async def test_erreur_reseau_declenche_une_nouvelle_tentative(hass):
+    """Une coupure réseau ou DNS lors du setup doit demander une nouvelle tentative et nettoyer hass.data."""
+    entry = await setup_entry(
+        hass, aiohttp.ClientError("DNS failure"), POLLUTION_ONLY)
+
+    assert entry.state is ConfigEntryState.SETUP_RETRY
+    assert entry.entry_id not in hass.data.get(DOMAIN, {})
+
+
+async def test_la_nouvelle_tentative_apres_erreur_reseau_reussit(hass):
+    """Après une erreur réseau, la reconnexion reconstruit bien les coordinateurs sans KeyError."""
+    entry = await setup_entry(
+        hass, aiohttp.ClientError("DNS failure"), POLLUTION_ONLY)
+    assert entry.state is ConfigEntryState.SETUP_RETRY
+
+    with patch_api({(CITY_CODE, URL_CODE.POLLUTION): FEATURES}):
+        await hass.config_entries.async_reload(entry.entry_id)
+        await hass.async_block_till_done()
+
+    assert entry.state is ConfigEntryState.LOADED
+    assert CONF_POLLUTION_COORDINATOR in coordinators(hass, entry)
 
 
 # ----------------------------------- indépendance pollution / pollen ----

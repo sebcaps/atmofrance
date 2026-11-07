@@ -1,5 +1,6 @@
 """ Les constantes pour l'intégration Tuto HACS """
 import logging
+import aiohttp
 from datetime import timedelta, date
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
@@ -127,8 +128,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 hass.data[DOMAIN][entry.entry_id][
                     CONF_POLLEN_COORDINATOR
                 ] = AtmoFrancePollenApiCoordinator(hass=hass, config=entry, api=pollenapi, source=source)
-        except ConfigEntryNotReady:
-            # Drop the partially built entry so the automatic retry rebuilds it
+        except (aiohttp.ClientError, TimeoutError) as err:
+            hass.data[DOMAIN].pop(entry.entry_id, None)
+            raise ConfigEntryNotReady(f"Erreur réseau lors de la connexion à Atmo France: {err}") from err
+        except Exception:
+            # Drop the partially built entry so any retry rebuilds it
             hass.data[DOMAIN].pop(entry.entry_id, None)
             raise
 
@@ -151,7 +155,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.debug("async_unload_entry method called")
     if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         # Remove config entry from domain.
-        entry = hass.data[DOMAIN].pop(entry.entry_id)
+        hass.data[DOMAIN].pop(entry.entry_id, None)
 
     return unload_ok
 
