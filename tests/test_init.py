@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from homeassistant.config_entries import ConfigEntryState
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -198,6 +199,25 @@ async def test_chaque_indicateur_resout_sa_propre_zone(hass):
     assert construits[CONF_POLLUTION_COORDINATOR]._source == CONF_INSEE_EPCI
     assert construits[CONF_POLLEN_COORDINATOR]._source == CONF_INSEE_CODE
 
+# ---------------------------------------------------------- session ----
+async def test_les_clients_partagent_la_session_de_home_assistant(hass):
+    """Une session propre au client n'est jamais fermee : elle fuit a chaque
+    nouvel essai ConfigEntryNotReady."""
+    coverage = {
+        (CITY_CODE, URL_CODE.POLLUTION): FEATURES,
+        (CITY_CODE, URL_CODE.POLLEN): FEATURES,
+    }
+    entry = MockConfigEntry(
+        domain=DOMAIN, data=ENTRY_DATA, options=POLLUTION_AND_POLLEN, version=3)
+    entry.add_to_hass(hass)
+    with patch_api(coverage) as api_class:
+        await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+
+    session = async_get_clientsession(hass)
+    assert api_class.call_count == 2
+    for call in api_class.call_args_list:
+        assert call.args[1] is session
 
 # ------------------------------------------ échec réel ou absence de données ----
 class FailingApi(FakeApi):
