@@ -232,4 +232,14 @@ class AtmoFrancePollenApiCoordinator (AtmoFranceApiCoordinator):
         super().__init__(hass, config, api, source,  update_method=self._update_method)
 
     async def _update_method(self):
+        data = await self.api.get_data(self.config.data[self._source], URL_CODE.POLLEN)
+        if data is None:
+            # Genuine API failure: flag the update as failed.
+            self.async_set_update_error(
+                f'No Data from Atmo France for INSEE code {
+                    self.config.data[self._source]} and date {date.today().strftime("%Y-%m-%d")}'
+            )
+            return False
+        # An empty feed is not an error: the sensors simply stay "unknown".
+        return len(data) > 0
         return await self._fetch(URL_CODE.POLLEN)
