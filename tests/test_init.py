@@ -1,8 +1,12 @@
 """Tests de mise en place de l'entrée de configuration."""
 from unittest.mock import patch
 
+import pytest
+
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import STATE_UNKNOWN
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.update_coordinator import UpdateFailed
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.atmofrance.const import (
@@ -263,3 +267,90 @@ async def test_chaque_indicateur_resout_sa_propre_zone(hass):
     assert entry.state is ConfigEntryState.LOADED
     assert construits[CONF_POLLUTION_COORDINATOR]._source == CONF_INSEE_EPCI
     assert construits[CONF_POLLEN_COORDINATOR]._source == CONF_INSEE_CODE
+
+# ---------------------------------------------------------- session ----
+async def test_les_clients_partagent_la_session_de_home_assistant(hass):
+    """Une session propre au client n'est jamais fermee : elle fuit a chaque
+    nouvel essai ConfigEntryNotReady."""
+    coverage = {
+        (CITY_CODE, URL_CODE.POLLUTION): FEATURES,
+        (CITY_CODE, URL_CODE.POLLEN): FEATURES,
+    }
+    entry = MockConfigEntry(
+        domain=DOMAIN, data=ENTRY_DATA, options=POLLUTION_AND_POLLEN, version=3)
+    entry.add_to_hass(hass)
+    with patch_api(coverage) as api_class:
+        await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+
+    session = async_get_clientsession(hass)
+    assert api_class.call_count == 2
+    for call in api_class.call_args_list:
+        assert call.args[1] is session
+
+# ------------------------------------------ échec réel ou absence de données ----
+class FailingApi(FakeApi):
+    """La requête elle-même échoue : get_data renvoie None."""
+
+    async def get_data(self, code, url_code):
+        return None
+
+
+class EmptyApi(FakeApi):
+    """L'API répond correctement et n'a aucune ligne à donner."""
+
+    async def get_data(self, code, url_code):
+        return []
+
+
+async def test_une_requete_echouee_marque_la_mise_a_jour_en_echec(hass):
+    entry = await setup_entry(
+        hass, {(CITY_CODE, URL_CODE.POLLUTION): FEATURES}, POLLUTION_ONLY)
+    coordinator = coordinators(hass, entry)[CONF_POLLUTION_COORDINATOR]
+
+    coordinator.api = FailingApi({})
+    with pytest.raises(UpdateFailed):
+        await coordinator._update_method()
+
+
+async def test_une_reponse_vide_n_est_pas_un_echec(hass):
+    """Entre la purge nocturne d'Atmo et sa republication de la mi-journée."""
+    entry = await setup_entry(
+        hass, {(CITY_CODE, URL_CODE.POLLUTION): FEATURES}, POLLUTION_ONLY)
+    coordinator = coordinators(hass, entry)[CONF_POLLUTION_COORDINATOR]
+
+    coordinator.api = EmptyApi({})
+
+    assert await coordinator._update_method() == []
+
+
+async def test_une_reponse_vide_laisse_le_coordinateur_sain(hass):
+    entry = await setup_entry(
+        hass, {(CITY_CODE, URL_CODE.POLLUTION): FEATURES}, POLLUTION_ONLY)
+    coordinator = coordinators(hass, entry)[CONF_POLLUTION_COORDINATOR]
+
+    coordinator.api = EmptyApi({})
+    await coordinator.async_refresh()
+
+    assert coordinator.last_update_success is True
+
+
+async def test_un_echec_atteint_last_update_success(hass):
+    """Le retour False précédent laissait last_update_success à True."""
+    entry = await setup_entry(
+        hass, {(CITY_CODE, URL_CODE.POLLUTION): FEATURES}, POLLUTION_ONLY)
+    coordinator = coordinators(hass, entry)[CONF_POLLUTION_COORDINATOR]
+
+    coordinator.api = FailingApi({})
+    await coordinator.async_refresh()
+
+    assert coordinator.last_update_success is False
+    assert isinstance(coordinator.last_exception, UpdateFailed)
+
+
+async def test_le_coordinateur_renvoie_la_charge_utile(hass):
+    entry = await setup_entry(
+        hass, {(CITY_CODE, URL_CODE.POLLUTION): FEATURES}, POLLUTION_ONLY)
+    coordinator = coordinators(hass, entry)[CONF_POLLUTION_COORDINATOR]
+
+    assert await coordinator._update_method() == FEATURES
