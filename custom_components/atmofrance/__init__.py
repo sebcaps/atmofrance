@@ -80,8 +80,9 @@ async def _async_resolve_source(entry: ConfigEntry, api, url_code: URL_CODE) -> 
             _LOGGER.info("Use %s: %s as source", conf_key, entry.data[conf_key])
             return conf_key
 
-    _LOGGER.error(
-        "Impossible de récupérer les données pour la ville %s ou l'EPCI %s",
+    _LOGGER.info(
+        "No %s data published for city %s nor EPCI %s yet",
+        url_code.name.lower(),
         entry.data[CONF_INSEE_CODE],
         entry.data[CONF_INSEE_EPCI],
     )
@@ -108,10 +109,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 _LOGGER.info("Getting Pollution data")
                 source = await _async_resolve_source(entry, pollutionapi, URL_CODE.POLLUTION)
                 if source is None:
-                    raise ConfigEntryNotReady(
-                        f"No pollution data available for city {entry.data[CONF_INSEE_CODE]} "
-                        f"nor EPCI {entry.data[CONF_INSEE_EPCI]}"
+                    # Empty pollution feed: Atmo France purges its dataset
+                    # overnight and republishes it around midday. Keep the
+                    # entry loaded so that a Home Assistant restart during
+                    # that window does not leave the integration in
+                    # setup_retry until the data comes back; the pollution
+                    # sensors report 0 ("Indisponible") and the coordinator
+                    # keeps polling the city zone until data is published.
+                    _LOGGER.warning(
+                        "No pollution data available for city %s nor EPCI %s, "
+                        "pollution sensors report 0 until data is published",
+                        entry.data[CONF_INSEE_CODE],
+                        entry.data[CONF_INSEE_EPCI],
                     )
+                    source = CONF_INSEE_CODE
                 hass.data[DOMAIN][entry.entry_id][
                     CONF_POLLUTION_COORDINATOR
                 ] = AtmoFrancePollutionApiCoordinator(hass=hass, config=entry, api=pollutionapi, source=source)
