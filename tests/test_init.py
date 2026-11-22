@@ -212,22 +212,31 @@ async def test_le_dechargement_libere_l_entree(hass):
 
 
 # ------------------------------------- absence totale de données ----
-async def test_sans_aucune_donnee_le_setup_demande_une_nouvelle_tentative(hass):
-    """La plateforme sensor plantait sur un KeyError, sans jamais réessayer."""
+async def test_sans_aucune_donnee_le_setup_reste_charge(hass):
+    """Atmo purge son jeu de données la nuit et le republie vers midi.
+
+    Un redémarrage de Home Assistant dans cette fenêtre ne doit plus laisser
+    l'intégration en setup_retry jusqu'à la republication : elle reste chargée
+    sur la commune et les capteurs de pollution affichent 0 (« Indisponible »).
+    """
     entry = await setup_entry(hass, {}, POLLUTION_ONLY)
 
-    assert entry.state is ConfigEntryState.SETUP_RETRY
+    assert entry.state is ConfigEntryState.LOADED
+    assert coordinators(hass, entry)[
+        CONF_POLLUTION_COORDINATOR]._source == CONF_INSEE_CODE
 
 
 async def test_un_setup_echoue_ne_laisse_rien_derriere_lui(hass):
     """Sinon la garde sur entry_id ferait sauter la reconstruction."""
-    entry = await setup_entry(hass, {}, POLLUTION_ONLY)
+    entry = await setup_entry(
+        hass, {(CITY_CODE, URL_CODE.POLLUTION): None}, POLLUTION_ONLY)
 
     assert entry.entry_id not in hass.data.get(DOMAIN, {})
 
 
 async def test_la_nouvelle_tentative_aboutit_quand_l_api_repond(hass):
-    entry = await setup_entry(hass, {}, POLLUTION_ONLY)
+    entry = await setup_entry(
+        hass, {(CITY_CODE, URL_CODE.POLLUTION): None}, POLLUTION_ONLY)
     assert entry.state is ConfigEntryState.SETUP_RETRY
 
     with patch_api({(CITY_CODE, URL_CODE.POLLUTION): FEATURES}):
